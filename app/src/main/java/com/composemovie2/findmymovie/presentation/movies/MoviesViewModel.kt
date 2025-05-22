@@ -43,7 +43,7 @@ class MoviesViewModel @Inject constructor(
                     _state.value = MoviesState(isLoading=true)
                 }
                 is NetworkResult.Error -> {
-                    _state.value = MoviesState(errorMsg = it.message)
+                    _state.value = MoviesState(errorMsg = it.message?:"error")
                 }
 
 
