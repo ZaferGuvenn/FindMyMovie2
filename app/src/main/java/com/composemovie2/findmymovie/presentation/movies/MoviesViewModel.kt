@@ -18,13 +18,13 @@ class MoviesViewModel @Inject constructor(
     private val getMoviesUseCase: GetMoviesUseCase
 ): ViewModel() {
 
-    private val _state = mutableStateOf(MoviesState())
+    private val _state = mutableStateOf<MoviesState>(MoviesState())
     val state : State<MoviesState> = _state
 
     private var job : Job?=null
 
     init {
-        searchMovies("Batman")
+        searchMovies("batman")
     }
 
     private fun searchMovies(searchString:String){

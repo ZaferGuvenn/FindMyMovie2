@@ -1,15 +1,13 @@
 package com.composemovie2.findmymovie.data.remote.dto
 
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.google.gson.annotations.SerializedName
 
-@Serializable
 data class MoviesDto(
-    @SerialName("Response")
+    @SerializedName("Response")
     val response: String,
-    @SerialName("Search")
+    @SerializedName("Search")
     val search: List<Search>,
-    @SerialName("totalResults")
+    @SerializedName("totalResults")
     val totalResults: String
 )

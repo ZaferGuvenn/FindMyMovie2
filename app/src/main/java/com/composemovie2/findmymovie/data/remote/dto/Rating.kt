@@ -1,13 +1,11 @@
 package com.composemovie2.findmymovie.data.remote.dto
 
+import com.google.gson.annotations.SerializedName
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class Rating(
-    @SerialName("Source")
+    @SerializedName("Source")
     val source: String,
-    @SerialName("Value")
+    @SerializedName("Value")
     val value: String
 )

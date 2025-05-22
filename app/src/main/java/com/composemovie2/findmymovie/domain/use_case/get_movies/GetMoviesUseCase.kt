@@ -23,6 +23,8 @@ class GetMoviesUseCase @Inject constructor(
 
                 val moviesDto = movieRepository.getMoviesDto(searchString)
 
+                println(moviesDto)
+
                 if (moviesDto.response == "True"){
                     if (moviesDto.totalResults=="0"){
                         emit(NetworkResult.Error(message = "No movies found!"))

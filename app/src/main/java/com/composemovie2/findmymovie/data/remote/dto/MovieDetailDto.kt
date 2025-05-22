@@ -1,59 +1,57 @@
 package com.composemovie2.findmymovie.data.remote.dto
 
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
+import com.google.gson.annotations.SerializedName
 
-@Serializable
 data class MovieDetailDto(
-    @SerialName("Actors")
+    @SerializedName("Actors")
     val actors: String,
-    @SerialName("Awards")
+    @SerializedName("Awards")
     val awards: String,
-    @SerialName("BoxOffice")
+    @SerializedName("BoxOffice")
     val boxOffice: String,
-    @SerialName("Country")
+    @SerializedName("Country")
     val country: String,
-    @SerialName("DVD")
+    @SerializedName("DVD")
     val dVD: String,
-    @SerialName("Director")
+    @SerializedName("Director")
     val director: String,
-    @SerialName("Genre")
+    @SerializedName("Genre")
     val genre: String,
-    @SerialName("imdbID")
+    @SerializedName("imdbID")
     val imdbID: String,
-    @SerialName("imdbRating")
+    @SerializedName("imdbRating")
     val imdbRating: String,
-    @SerialName("imdbVotes")
+    @SerializedName("imdbVotes")
     val imdbVotes: String,
-    @SerialName("Language")
+    @SerializedName("Language")
     val language: String,
-    @SerialName("Metascore")
+    @SerializedName("Metascore")
     val metascore: String,
-    @SerialName("Plot")
+    @SerializedName("Plot")
     val plot: String,
-    @SerialName("Poster")
+    @SerializedName("Poster")
     val poster: String,
-    @SerialName("Production")
+    @SerializedName("Production")
     val production: String,
-    @SerialName("Rated")
+    @SerializedName("Rated")
     val rated: String,
-    @SerialName("Ratings")
+    @SerializedName("Ratings")
     val ratings: List<Rating>,
-    @SerialName("Released")
+    @SerializedName("Released")
     val released: String,
-    @SerialName("Response")
+    @SerializedName("Response")
     val response: String,
-    @SerialName("Runtime")
+    @SerializedName("Runtime")
     val runtime: String,
-    @SerialName("Title")
+    @SerializedName("Title")
     val title: String,
-    @SerialName("Type")
+    @SerializedName("Type")
     val type: String,
-    @SerialName("Website")
+    @SerializedName("Website")
     val website: String,
-    @SerialName("Writer")
+    @SerializedName("Writer")
     val writer: String,
-    @SerialName("Year")
+    @SerializedName("Year")
     val year: String
 )

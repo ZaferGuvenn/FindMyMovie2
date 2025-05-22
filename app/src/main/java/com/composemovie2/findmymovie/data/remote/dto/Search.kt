@@ -1,19 +1,17 @@
 package com.composemovie2.findmymovie.data.remote.dto
 
+import com.google.gson.annotations.SerializedName
 
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
 
-@Serializable
 data class Search(
-    @SerialName("imdbID")
+    @SerializedName("imdbID")
     val imdbID: String,
-    @SerialName("Poster")
+    @SerializedName("Poster")
     val poster: String,
-    @SerialName("Title")
+    @SerializedName("Title")
     val title: String,
-    @SerialName("Type")
+    @SerializedName("Type")
     val type: String,
-    @SerialName("Year")
+    @SerializedName("Year")
     val year: String
 )
