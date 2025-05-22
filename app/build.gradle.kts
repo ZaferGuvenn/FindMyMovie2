@@ -84,4 +84,17 @@ dependencies {
 
     implementation(libs.androidx.navigation.compose)
 
+
+    // Material Icons Extended
+    implementation ("androidx.compose.material:material-icons-extended:1.6.1")
+
+    // Material Design 3
+    implementation ("androidx.compose.material3:material3:1.2.0")
+    implementation ("androidx.compose.material3:material3-window-size-class:1.2.0")
+
+    // Compose UI
+    implementation ("androidx.compose.ui:ui:1.6.1")
+    implementation ("androidx.compose.ui:ui-tooling-preview:1.6.1")
+    implementation ("androidx.compose.ui:ui-util:1.6.1")
+
 }

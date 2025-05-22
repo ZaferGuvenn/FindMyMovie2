@@ -12,9 +12,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.composemovie2.findmymovie.presentation.movie_detail.MovieDetailScreen
 import com.composemovie2.findmymovie.presentation.movies.views.MoviesScreen
 import com.composemovie2.findmymovie.presentation.theme.FindMyMovie2Theme
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,18 +29,14 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             FindMyMovie2Theme {
-                Surface(color = MaterialTheme.colorScheme.background){
+                Surface(color = MaterialTheme.colorScheme.background) {
                     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-
-
-
                         MainScreen(
                             name = "Android",
                             modifier = Modifier.padding(innerPadding)
                         )
                     }
                 }
-
             }
         }
     }
@@ -45,21 +44,26 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(name: String, modifier: Modifier = Modifier) {
-
     val navController = rememberNavController()
 
-    NavHost(navController, "MoviesScreen"){
-
+    NavHost(
+        navController = navController,
+        startDestination = "MoviesScreen"
+    ) {
         composable("MoviesScreen") {
-
             MoviesScreen(navController)
         }
 
-        composable("MovieDetailScreen"){
-
+        composable(
+            route = "movie_detail_screen/{movieId}",
+            arguments = listOf(
+                navArgument("movieId") {
+                    type = NavType.StringType
+                }
+            )
+        ) { backStackEntry ->
+            val movieId = backStackEntry.arguments?.getString("movieId")
+            MovieDetailScreen(movieId = movieId, navController = navController)
         }
-
     }
-
-
 }

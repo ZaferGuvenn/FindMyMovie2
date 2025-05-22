@@ -10,6 +10,7 @@ class MoviesDTOMapper @Inject constructor(): Mapper<MoviesDto, List<Movie>> {
             Movie(
                 poster = it.poster,
                 title = it.title,
+                imdbId = it.imdbID,
                 type = it.type,
                 year = it.year
             )

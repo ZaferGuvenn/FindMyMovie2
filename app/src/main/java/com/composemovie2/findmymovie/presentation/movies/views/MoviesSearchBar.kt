@@ -19,49 +19,50 @@ import androidx.compose.material3.*
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Search
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MoviesSearchBar(
-
-    onSearch: (String)->Unit
-
+    query: String,
+    onQueryChange: (String) -> Unit
 ) {
-
-    var searchText by remember { mutableStateOf("") }
-    val keyboardController = LocalSoftwareKeyboardController.current
-
-    Box(modifier = Modifier.fillMaxWidth().padding(12.dp)) {
-
-
-
-        TextField(
-            value = searchText,
-            onValueChange = { searchText = it},
-            modifier = Modifier.fillMaxWidth().padding(16.dp),
-            placeholder = {Text("Batman")},
-            singleLine = true,
-            keyboardOptions = KeyboardOptions.Default.copy(
-                imeAction = ImeAction.Done
-            ),
-            keyboardActions = KeyboardActions (
-                onDone = {
-                    onSearch(searchText)
-                    keyboardController?.hide()
+    SearchBar(
+        query = query,
+        onQueryChange = onQueryChange,
+        onSearch = { },
+        active = false,
+        onActiveChange = { },
+        placeholder = { Text("Search movies...") },
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = "Search Icon"
+            )
+        },
+        trailingIcon = {
+            if (query.isNotEmpty()) {
+                IconButton(onClick = { onQueryChange("") }) {
+                    Icon(
+                        imageVector = Icons.Default.Clear,
+                        contentDescription = "Clear Search"
+                    )
                 }
+            }
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        colors = SearchBarDefaults.colors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            inputFieldColors = TextFieldDefaults.colors(
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant
             )
         )
-
-    }
-
-}
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewSearchBar() {
-    MaterialTheme {
-        MoviesSearchBar { query ->
-            println("Aranan kelime: $query")
-        }
+    ) {
+        // Search suggestions can be added here if needed
     }
 }

@@ -5,5 +5,6 @@ data class Movie(
     val poster: String,
     val title: String,
     val type: String,
+    val imdbId: String,
     val year: String
 )
