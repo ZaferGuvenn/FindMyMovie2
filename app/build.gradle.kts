@@ -63,6 +63,7 @@ dependencies {
 
     //hilt
     implementation("androidx.hilt:hilt-navigation-fragment:1.0.0")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
 
     implementation("com.google.dagger:hilt-android:2.56.2")
     ksp("com.google.dagger:hilt-android-compiler:2.56.2")
@@ -76,4 +77,10 @@ dependencies {
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     // gson converter
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+
+    val nav_version = "2.9.0"
+
+    implementation(libs.androidx.navigation.compose)
+
 }
