@@ -47,12 +47,8 @@ fun MovieListRow(
                     .fillMaxSize()
                     .background(
                         brush = Brush.verticalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                Color.Black.copy(alpha = 0.7f)
-                            ),
-                            startY = 300f,
-                            endY = 900f
+                0.5f to Color.Transparent,                             // Transparent from top to 50%
+                1.0f to Color.Black.copy(alpha = 0.8f)                 // Opaque black from 50% to bottom
                         )
                     )
             )

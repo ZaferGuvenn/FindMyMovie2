@@ -3,7 +3,7 @@ package com.composemovie2.findmymovie.di
 import com.composemovie2.findmymovie.data.remote.MovieAPI
 import com.composemovie2.findmymovie.data.repository.MovieRepositoryImpl
 import com.composemovie2.findmymovie.domain.repository.MovieRepository
-import com.composemovie2.findmymovie.util.Constants.API_URL
+import com.composemovie2.findmymovie.util.Constants // Updated import
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +22,7 @@ object AppModule {
     fun provideMovieAPI() : MovieAPI {
 
         return Retrofit.Builder()
-            .baseUrl(API_URL)
+            .baseUrl(Constants.TMDB_API_BASE_URL) // Changed to TMDB's base URL
             .addConverterFactory(GsonConverterFactory.create())
             .build()
             .create(MovieAPI::class.java)
