@@ -63,7 +63,7 @@ fun MainScreen(name: String, modifier: Modifier = Modifier) {
             )
         ) { backStackEntry ->
             val movieId = backStackEntry.arguments?.getString("movieId")
-            MovieDetailScreen(movieId = movieId, navController = navController)
+            MovieDetailScreen(navController = navController)
         }
     }
 }

@@ -113,7 +113,7 @@ fun MovieDetailContent(movie: MovieDetail) {
         Spacer(modifier = Modifier.height(8.dp))
         Text("Rating: ${movie.imdbRating}/10 (TMDB)", style = MaterialTheme.typography.bodyLarge)
         Spacer(modifier = Modifier.height(8.dp))
-        Text("Genres: ${movie.genres}", style = MaterialTheme.typography.bodyMedium)
+        Text("Genres: ${movie.genresList}", style = MaterialTheme.typography.bodyMedium)
 
 
         Spacer(modifier = Modifier.height(16.dp))

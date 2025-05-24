@@ -11,4 +11,6 @@ object Constants {
     var TMDB_API_KEY = "1ac2ce195900a44c7586b61969156a2e" // Placeholder - To be filled by user input later
     var TMDB_IMAGE_BASE_URL = "" // Placeholder - To be fetched from TMDB configuration endpoint
     const val DEFAULT_POSTER_SIZE = "w500" // A common default poster size
+    const val DEFAULT_BACKDROP_SIZE = "original" // For backdrop images
+    const val DEFAULT_PROFILE_SIZE = "w185" // For profile images (cast/crew)
 }
