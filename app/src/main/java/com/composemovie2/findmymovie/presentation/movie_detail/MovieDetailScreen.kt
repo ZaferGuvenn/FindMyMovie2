@@ -138,7 +138,7 @@ fun MovieDetailContent(movie: MovieDetail, state: MovieDetailState, navControlle
                     .fillMaxWidth()
                     .height(220.dp),
                 contentScale = ContentScale.Crop,
-                error = painterResource(id = R.drawable.broken_image)
+                error = Icons.Outlined.BrokenImage // Updated
             )
         } else {
             Box(
@@ -160,12 +160,12 @@ fun MovieDetailContent(movie: MovieDetail, state: MovieDetailState, navControlle
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = movie.title, style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
             if (!movie.tagline.isNullOrBlank()) { Text(text = movie.tagline!!, style = MaterialTheme.typography.titleMedium, fontStyle = FontStyle.Italic, color = MaterialTheme.colorScheme.secondary); Spacer(modifier = Modifier.height(8.dp)) }
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) { Text("Year: ${movie.year}", style = MaterialTheme.typography.bodyMedium); movie.runtime?.let { Text("Runtime: ${it}min", style = MaterialTheme.typography.bodyMedium) }; movie.status?.let { Text("Status: $it", style = MaterialTheme.typography.bodyMedium) } }
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) { Text("Year: ${movie.year ?: "N/A"}", style = MaterialTheme.typography.bodyMedium); movie.runtime?.let { Text("Runtime: ${it}min", style = MaterialTheme.typography.bodyMedium) }; movie.status?.let { Text("Status: $it", style = MaterialTheme.typography.bodyMedium) } }
             Spacer(modifier = Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) { Text("Rating: ${movie.imdbRating}/10", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold); movie.voteCount?.let { Text("(${it} votes)", style = MaterialTheme.typography.labelSmall) } }
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) { Text("Rating: ${String.format("%.1f", movie.voteAverage ?: 0.0)}/10", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold); movie.voteCount?.let { Text("(${it} votes)", style = MaterialTheme.typography.labelSmall) } }
             Spacer(modifier = Modifier.height(8.dp))
-            if (movie.genresList.isNotEmpty()) { Text("Genres: ${movie.genresList.joinToString(", ")}", style = MaterialTheme.typography.bodyMedium); Spacer(modifier = Modifier.height(16.dp)) }
-            Text("Overview", style = MaterialTheme.typography.titleLarge); Text(movie.overview, style = MaterialTheme.typography.bodyLarge); Spacer(modifier = Modifier.height(16.dp))
+            if (movie.genres?.isNotEmpty() == true) { Text("Genres: ${movie.genres?.joinToString { it.name } ?: "N/A"}", style = MaterialTheme.typography.bodyMedium); Spacer(modifier = Modifier.height(16.dp)) }
+            Text("Overview", style = MaterialTheme.typography.titleLarge); Text(movie.overview ?: "No overview available.", style = MaterialTheme.typography.bodyLarge); Spacer(modifier = Modifier.height(16.dp))
 
             if (movie.videos.isNotEmpty()) {
                 Text("Trailers", style = MaterialTheme.typography.titleLarge)
@@ -196,7 +196,7 @@ fun MovieDetailContent(movie: MovieDetail, state: MovieDetailState, navControlle
                                         .height(100.dp)
                                         .fillMaxWidth(),
                                     contentScale = ContentScale.Crop,
-                                    error = painterResource(id = R.drawable.broken_image)
+                                    error = Icons.Outlined.BrokenImage // Updated
                                 )
                                 Icon(
                                     Icons.Filled.PlayCircleOutline,
@@ -311,7 +311,7 @@ fun CastCrewItem(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
                 contentScale = ContentScale.Crop,
-                error = painterResource(id = R.drawable.baseline_person_24)
+                error = Icons.Filled.Person // Updated
             )
             Column(
                 modifier = Modifier
@@ -362,7 +362,7 @@ fun ProviderChip(provider: WatchProvider, isSubscribed: Boolean, onClick: () -> 
                         .width(40.dp)
                         .clip(RoundedCornerShape(4.dp)),
                     contentScale = ContentScale.Fit,
-                    error = painterResource(id = R.drawable.broken_image)
+                    error = Icons.Outlined.BrokenImage // Updated
                 )
                 if (isSubscribed) {
                     Icon(

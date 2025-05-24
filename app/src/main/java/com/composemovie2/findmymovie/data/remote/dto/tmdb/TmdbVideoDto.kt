@@ -20,3 +20,14 @@ data class TmdbVideoDto(
     @SerializedName("type")
     val type: String? // e.g., "Trailer", "Teaser"
 )
+
+fun TmdbVideoDto.toVideo(): com.composemovie2.findmymovie.domain.model.Video {
+    return com.composemovie2.findmymovie.domain.model.Video(
+        id = this.id ?: this.key ?: java.util.UUID.randomUUID().toString(), // Ensure ID is not empty
+        key = this.key ?: "",
+        name = this.name ?: "Unknown Video",
+        site = this.site ?: "Unknown Site",
+        type = this.type ?: "Unknown Type",
+        thumbnailUrl = if (this.site == "YouTube" && !this.key.isNullOrBlank()) "https://img.youtube.com/vi/${this.key}/0.jpg" else ""
+    )
+}

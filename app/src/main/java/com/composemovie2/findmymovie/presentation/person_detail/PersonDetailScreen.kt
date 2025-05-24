@@ -110,7 +110,7 @@ fun PersonDetailContent(
                 .fillMaxWidth()
                 .height(300.dp),
             contentScale = ContentScale.Crop,
-            error = painterResource(id = R.drawable.baseline_person_24)
+            error = Icons.Filled.Person // Updated
         )
 
         Column(
@@ -182,13 +182,13 @@ fun MovieItem(movie: Movie) {
     ) {
         Column {
             AsyncImage(
-                model = movie.poster,
+                model = movie.posterPath, // Changed from movie.poster
                 contentDescription = movie.title,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp),
                 contentScale = ContentScale.Crop,
-                error = painterResource(id = R.drawable.broken_image)
+                error = Icons.Outlined.Movie // Updated
             )
             Text(
                 text = movie.title,
@@ -217,7 +217,7 @@ fun TVShowItem(tvShow: TVShow) {
                     .fillMaxWidth()
                     .height(150.dp),
                 contentScale = ContentScale.Crop,
-                error = painterResource(id = R.drawable.broken_image)
+                error = Icons.Outlined.Movie // Updated
             )
             Text(
                 text = tvShow.name,

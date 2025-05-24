@@ -23,23 +23,47 @@ class PersonDetailViewModel @Inject constructor(
 
     fun loadPersonDetails(personId: Int) {
         viewModelScope.launch {
-            _state.value = _state.value.copy(isLoading = true)
+            _state.value = _state.value.copy(isLoading = true, errorMsg = null) // Clear previous errors
             try {
-                val personDetail = repository.getPersonDetails(personId)
-                val knownForMovies = repository.getPersonMovies(personId)
-                val knownForTVShows = repository.getPersonTVShows(personId)
+                val personDetailResult = repository.getPersonDetails(personId)
+                val knownForMoviesResult = repository.getPersonMovies(personId)
+                val knownForTVShowsResult = repository.getPersonTVShows(personId)
+
+                var finalPersonDetail: PersonDetail? = null
+                var finalKnownForMovies: List<Movie> = emptyList()
+                var finalKnownForTVShows: List<TVShow> = emptyList()
+                val errorMessages = mutableListOf<String>()
+
+                when (personDetailResult) {
+                    is NetworkResult.Success -> finalPersonDetail = personDetailResult.data
+                    is NetworkResult.Error -> errorMessages.add(personDetailResult.message ?: "Error fetching person details")
+                    is NetworkResult.Loading -> { /* Handled by initial isLoading=true */ }
+                }
+
+                when (knownForMoviesResult) {
+                    is NetworkResult.Success -> finalKnownForMovies = knownForMoviesResult.data ?: emptyList()
+                    is NetworkResult.Error -> errorMessages.add(knownForMoviesResult.message ?: "Error fetching known for movies")
+                    is NetworkResult.Loading -> { /* Handled */ }
+                }
+
+                when (knownForTVShowsResult) {
+                    is NetworkResult.Success -> finalKnownForTVShows = knownForTVShowsResult.data ?: emptyList()
+                    is NetworkResult.Error -> errorMessages.add(knownForTVShowsResult.message ?: "Error fetching known for TV shows")
+                    is NetworkResult.Loading -> { /* Handled */ }
+                }
                 
                 _state.value = _state.value.copy(
-                    personDetail = personDetail,
-                    knownForMovies = knownForMovies,
-                    knownForTVShows = knownForTVShows,
+                    personDetail = finalPersonDetail,
+                    knownForMovies = finalKnownForMovies,
+                    knownForTVShows = finalKnownForTVShows,
                     isLoading = false,
-                    errorMsg = null
+                    errorMsg = if (errorMessages.isNotEmpty()) errorMessages.joinToString("\n") else null
                 )
-            } catch (e: Exception) {
+
+            } catch (e: Exception) { // Catch any unexpected exceptions from the repository calls themselves
                 _state.value = _state.value.copy(
                     isLoading = false,
-                    errorMsg = e.message ?: "An error occurred"
+                    errorMsg = e.message ?: "An unexpected error occurred"
                 )
             }
         }

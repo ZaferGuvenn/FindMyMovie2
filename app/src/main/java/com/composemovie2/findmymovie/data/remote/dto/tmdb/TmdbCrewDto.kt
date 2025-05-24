@@ -26,3 +26,13 @@ data class TmdbCrewDto(
     @SerializedName("job")
     val job: String?
 )
+
+fun TmdbCrewDto.toCrewMember(): com.composemovie2.findmymovie.domain.model.CrewMember {
+    return com.composemovie2.findmymovie.domain.model.CrewMember(
+        id = this.id ?: 0,
+        name = this.name ?: "Unknown Crew Member",
+        job = this.job ?: "Unknown Job",
+        department = this.department ?: "Unknown Department",
+        profilePath = this.profilePath?.let { com.composemovie2.findmymovie.util.Constants.TMDB_IMAGE_BASE_URL + com.composemovie2.findmymovie.util.Constants.DEFAULT_PROFILE_SIZE + it }
+    )
+}

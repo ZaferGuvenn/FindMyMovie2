@@ -35,7 +35,7 @@ fun MovieListRow(
         Box(modifier = Modifier.fillMaxSize()) {
             // Movie Poster
             AsyncImage(
-                model = movie.poster,
+                model = movie.posterPath, // Changed from movie.poster
                 contentDescription = movie.title,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop
@@ -81,20 +81,7 @@ fun MovieListRow(
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.8f)
                     )
-
-                    Card(
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        ),
-                        shape = RoundedCornerShape(4.dp)
-                    ) {
-                        Text(
-                            text = movie.type,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.labelSmall,
-                            color = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
+                    // Removed Type Card
                 }
             }
         }

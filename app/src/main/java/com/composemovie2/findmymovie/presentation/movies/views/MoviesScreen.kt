@@ -168,7 +168,7 @@ fun MoviesScreen(
                 }
                 else -> { 
                     LazyVerticalGrid(columns = GridCells.Fixed(2), contentPadding = PaddingValues(16.dp), horizontalArrangement = Arrangement.spacedBy(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                        items(state.movies.filter { movie -> selectedType == "All" || movie.type.equals(selectedType, ignoreCase = true) }) { movie ->
+                        items(state.movies) { movie -> // Removed filter
                             MovieListRow(movie = movie, onItemClick = {navController.navigate("movie_detail_screen/${movie.imdbId}")})
                         }
                     }

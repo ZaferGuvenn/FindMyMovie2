@@ -105,16 +105,18 @@ class MovieDetailViewModel @Inject constructor(
                 if (_isFavorite.value) {
                     removeFavoriteMovieUseCase.execute(movieId)
                 } else {
-                    val posterPathOnly = if (movieDetail.poster.startsWith(Constants.TMDB_IMAGE_BASE_URL)) {
-                        movieDetail.poster.removePrefix(Constants.TMDB_IMAGE_BASE_URL)
-                                       .removePrefix(Constants.DEFAULT_POSTER_SIZE) 
-                    } else {
-                        movieDetail.poster.substringAfterLast('/') 
+                    val posterPathOnly = movieDetail.posterPath?.let { path ->
+                        if (path.startsWith(Constants.TMDB_IMAGE_BASE_URL)) {
+                            path.removePrefix(Constants.TMDB_IMAGE_BASE_URL)
+                                .removePrefix(Constants.DEFAULT_POSTER_SIZE)
+                        } else {
+                            path.substringAfterLast('/')
+                        }
                     }
                     val favoriteEntity = FavoriteMovieEntity(
-                        movieId = movieId, title = movieDetail.title, posterPath = posterPathOnly, 
-                        overview = movieDetail.overview, releaseDate = movieDetail.released, 
-                        voteAverage = movieDetail.imdbRating.toDoubleOrNull() 
+                        movieId = movieId, title = movieDetail.title, posterPath = posterPathOnly,
+                        overview = movieDetail.overview, releaseDate = movieDetail.releaseDate, // Changed from movieDetail.released
+                        voteAverage = movieDetail.voteAverage // Changed from movieDetail.imdbRating.toDoubleOrNull()
                     )
                     addFavoriteMovieUseCase.execute(favoriteEntity)
                 }

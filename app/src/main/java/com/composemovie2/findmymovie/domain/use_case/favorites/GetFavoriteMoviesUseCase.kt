@@ -18,9 +18,9 @@ class GetFavoriteMoviesUseCase @Inject constructor(
                 Movie(
                     imdbId = entity.movieId.toString(), // TMDB ID
                     title = entity.title,
-                    poster = entity.posterPath?.let { "${Constants.TMDB_IMAGE_BASE_URL}${Constants.DEFAULT_POSTER_SIZE}$it" } ?: "",
-                    year = entity.releaseDate?.substringBefore("-") ?: "N/A",
-                    type = "movie" // Assuming favorites are movies. Could add 'type' to entity if needed.
+                    posterPath = entity.posterPath?.let { "${Constants.TMDB_IMAGE_BASE_URL}${Constants.DEFAULT_POSTER_SIZE}$it" }, // Changed poster to posterPath
+                    year = entity.releaseDate?.substringBefore("-") ?: "N/A"
+                    // Removed type = "movie"
                 )
             }
         }

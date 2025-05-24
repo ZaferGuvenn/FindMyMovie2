@@ -20,5 +20,8 @@ data class MovieDetail(
     val budget: Long?,
     val revenue: Long?,
     val tagline: String?,
-    val year: String?
+    val year: String?,
+    val videos: List<Video> = emptyList(),
+    val cast: List<CastMember> = emptyList(),
+    val crew: List<CrewMember> = emptyList()
 )

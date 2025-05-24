@@ -20,15 +20,21 @@ data class MovieDetailResponseDto(
     val adult: Boolean?,
     val original_language: String?,
     val original_title: String?,
-    val video: Boolean?
+    val video: Boolean?,
+    val credits: TmdbCreditsDto?, // Added credits
+    val videos: TmdbVideosResponseDto? // Added videos
 ) {
     fun toMovieDetail(): com.composemovie2.findmymovie.domain.model.MovieDetail {
+        val baseImageUrl = com.composemovie2.findmymovie.util.Constants.TMDB_IMAGE_BASE_URL
+        val posterSize = com.composemovie2.findmymovie.util.Constants.DEFAULT_POSTER_SIZE
+        val backdropSize = com.composemovie2.findmymovie.util.Constants.DEFAULT_BACKDROP_SIZE
+
         return com.composemovie2.findmymovie.domain.model.MovieDetail(
             id = id,
             title = title,
             overview = overview,
-            posterPath = poster_path,
-            backdropPath = backdrop_path,
+            posterPath = poster_path?.let { baseImageUrl + posterSize + it },
+            backdropPath = backdrop_path?.let { baseImageUrl + backdropSize + it },
             releaseDate = release_date,
             voteAverage = vote_average,
             voteCount = vote_count,
@@ -40,7 +46,10 @@ data class MovieDetailResponseDto(
             budget = budget,
             revenue = revenue,
             tagline = tagline,
-            year = release_date?.substring(0, 4)
+            year = release_date?.substringBefore("-") ?: "",
+            videos = this.videos?.results?.mapNotNull { it.toVideo() }?.filter { it.site == "YouTube" && (it.type == "Trailer" || it.type == "Teaser") } ?: emptyList(),
+            cast = this.credits?.cast?.mapNotNull { it.toCastMember() } ?: emptyList(),
+            crew = this.credits?.crew?.mapNotNull { it.toCrewMember() } ?: emptyList()
         )
     }
 }

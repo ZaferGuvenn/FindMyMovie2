@@ -28,3 +28,12 @@ data class TmdbCastDto(
     @SerializedName("order")
     val order: Int?
 )
+
+fun TmdbCastDto.toCastMember(): com.composemovie2.findmymovie.domain.model.CastMember {
+    return com.composemovie2.findmymovie.domain.model.CastMember(
+        id = this.id ?: 0,
+        name = this.name ?: "Unknown Actor",
+        character = this.character ?: "Unknown Character",
+        profilePath = this.profilePath?.let { com.composemovie2.findmymovie.util.Constants.TMDB_IMAGE_BASE_URL + com.composemovie2.findmymovie.util.Constants.DEFAULT_PROFILE_SIZE + it }
+    )
+}
