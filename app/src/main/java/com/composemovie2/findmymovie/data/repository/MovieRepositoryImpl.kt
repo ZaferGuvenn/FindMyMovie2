@@ -1,13 +1,20 @@
 package com.composemovie2.findmymovie.data.repository
 
-import com.composemovie2.findmymovie.data.local.FavoriteMovieEntity 
-import com.composemovie2.findmymovie.data.local.MovieDao 
-import com.composemovie2.findmymovie.data.remote.MovieAPI
-import com.composemovie2.findmymovie.data.remote.dto.MovieDetailDto // OMDb
-import com.composemovie2.findmymovie.data.remote.dto.MoviesDto // OMDb
+import com.composemovie2.findmymovie.data.local.FavoriteMovieEntity
+import com.composemovie2.findmymovie.data.local.MovieDao
+import com.composemovie2.findmymovie.data.remote.api.MovieAPI // Corrected import
+// OMDb DTOs likely unused now, will remove if they cause issues or are confirmed unused later.
+import com.composemovie2.findmymovie.data.remote.dto.MovieDetailDto 
+import com.composemovie2.findmymovie.data.remote.dto.MoviesDto 
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.CombinedCreditsResponseDto
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.MovieDetailResponseDto
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.MovieListResponseDto
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.PersonDetailResponseDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbConfigurationDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbGenresResponseDto
-import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbMovieDto
+// TmdbMovieDto and TmdbMoviesResponseDto are replaced by MovieDetailResponseDto and MovieListResponseDto for the overridden methods
+// The old `getTmdbMovieDetails` etc. in Impl might still refer to them.
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbMovieDto 
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbMoviesResponseDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbWatchProvidersResponseDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbCountryDto // New
@@ -127,11 +134,12 @@ class MovieRepositoryImpl @Inject constructor(
 
     override suspend fun getMovies(page: Int): NetworkResult<List<Movie>> {
         return try {
-            val response = movieAPI.getTmdbPopularMovies(page)
+            // movieAPI is now com.composemovie2.findmymovie.data.remote.api.MovieAPI
+            val response = movieAPI.getPopularMovies(page = page) // Returns Response<MovieListResponseDto>
             if (response.isSuccessful) {
-                response.body()?.let { movieListDto ->
-                    NetworkResult.Success(movieListDto.results.map { it.toMovie() })
-                } ?: NetworkResult.Error("Movies not found")
+                response.body()?.let { movieListResponseDto -> // movieListResponseDto is MovieListResponseDto
+                    NetworkResult.Success(movieListResponseDto.results.map { it.toMovie() }) // MovieListResponseDto.results is List<MovieDto>
+                } ?: NetworkResult.Error("Movies not found (empty body)")
             } else {
                 NetworkResult.Error(response.message())
             }
@@ -142,11 +150,11 @@ class MovieRepositoryImpl @Inject constructor(
 
     override suspend fun getMovieDetails(movieId: Int): NetworkResult<MovieDetail> {
         return try {
-            val response = movieAPI.getTmdbMovieDetails(movieId)
+            val response = movieAPI.getMovieDetails(movieId = movieId) // Returns Response<MovieDetailResponseDto>
             if (response.isSuccessful) {
-                response.body()?.let { movieDetailDto ->
-                    NetworkResult.Success(movieDetailDto.toMovieDetail())
-                } ?: NetworkResult.Error("Movie details not found")
+                response.body()?.let { movieDetailResponseDto -> // movieDetailResponseDto is MovieDetailResponseDto
+                    NetworkResult.Success(movieDetailResponseDto.toMovieDetail()) // MovieDetailResponseDto.toMovieDetail()
+                } ?: NetworkResult.Error("Movie details not found (empty body)")
             } else {
                 NetworkResult.Error(response.message())
             }
@@ -157,11 +165,11 @@ class MovieRepositoryImpl @Inject constructor(
 
     override suspend fun searchMovies(query: String, page: Int): NetworkResult<List<Movie>> {
         return try {
-            val response = movieAPI.searchTmdbMovies(query, page)
+            val response = movieAPI.searchMovies(query = query, page = page) // Returns Response<MovieListResponseDto>
             if (response.isSuccessful) {
-                response.body()?.let { movieListDto ->
-                    NetworkResult.Success(movieListDto.results.map { it.toMovie() })
-                } ?: NetworkResult.Error("Movies not found")
+                response.body()?.let { movieListResponseDto -> // movieListResponseDto is MovieListResponseDto
+                    NetworkResult.Success(movieListResponseDto.results.map { it.toMovie() }) // MovieListResponseDto.results is List<MovieDto>
+                } ?: NetworkResult.Error("Movies not found (empty body)")
             } else {
                 NetworkResult.Error(response.message())
             }
@@ -172,11 +180,11 @@ class MovieRepositoryImpl @Inject constructor(
 
     override suspend fun getPersonDetails(personId: Int): NetworkResult<PersonDetail> {
         return try {
-            val response = movieAPI.getPersonDetails(personId)
+            val response = movieAPI.getPersonDetails(personId = personId) // Returns Response<PersonDetailResponseDto>
             if (response.isSuccessful) {
-                response.body()?.let { personDto ->
-                    NetworkResult.Success(personDto.toPersonDetail())
-                } ?: NetworkResult.Error("Person details not found")
+                response.body()?.let { personDetailResponseDto -> // personDetailResponseDto is PersonDetailResponseDto
+                    NetworkResult.Success(personDetailResponseDto.toPersonDetail()) // PersonDetailResponseDto.toPersonDetail()
+                } ?: NetworkResult.Error("Person details not found (empty body)")
             } else {
                 NetworkResult.Error(response.message())
             }
@@ -187,14 +195,14 @@ class MovieRepositoryImpl @Inject constructor(
 
     override suspend fun getPersonMovies(personId: Int): NetworkResult<List<Movie>> {
         return try {
-            val response = movieAPI.getPersonCombinedCredits(personId)
+            val response = movieAPI.getPersonCombinedCredits(personId = personId) // Returns Response<CombinedCreditsResponseDto>
             if (response.isSuccessful) {
-                response.body()?.let { creditsDto ->
-                    val movies = creditsDto.cast
+                response.body()?.let { combinedCreditsResponseDto -> // combinedCreditsResponseDto is CombinedCreditsResponseDto
+                    val movies = combinedCreditsResponseDto.cast // This is List<CastCreditDto>
                         .filter { it.media_type == "movie" }
-                        .map { it.toMovie() }
+                        .map { it.toMovie() } // CastCreditDto.toMovie()
                     NetworkResult.Success(movies)
-                } ?: NetworkResult.Error("Person movies not found")
+                } ?: NetworkResult.Error("Person movies not found (empty body)")
             } else {
                 NetworkResult.Error(response.message())
             }
@@ -205,14 +213,14 @@ class MovieRepositoryImpl @Inject constructor(
 
     override suspend fun getPersonTVShows(personId: Int): NetworkResult<List<TVShow>> {
         return try {
-            val response = movieAPI.getPersonCombinedCredits(personId)
+            val response = movieAPI.getPersonCombinedCredits(personId = personId) // Returns Response<CombinedCreditsResponseDto>
             if (response.isSuccessful) {
-                response.body()?.let { creditsDto ->
-                    val tvShows = creditsDto.cast
+                response.body()?.let { combinedCreditsResponseDto -> // combinedCreditsResponseDto is CombinedCreditsResponseDto
+                    val tvShows = combinedCreditsResponseDto.cast // This is List<CastCreditDto>
                         .filter { it.media_type == "tv" }
-                        .map { it.toTVShow() }
+                        .map { it.toTVShow() } // CastCreditDto.toTVShow()
                     NetworkResult.Success(tvShows)
-                } ?: NetworkResult.Error("Person TV shows not found")
+                } ?: NetworkResult.Error("Person TV shows not found (empty body)")
             } else {
                 NetworkResult.Error(response.message())
             }

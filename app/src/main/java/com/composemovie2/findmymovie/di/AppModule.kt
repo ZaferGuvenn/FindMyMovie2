@@ -18,6 +18,8 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
+import com.composemovie2.findmymovie.BuildConfig // For GEMINI_API_KEY
+import com.composemovie2.findmymovie.data.remote.GeminiAiService
 
 
 @Module
@@ -63,5 +65,11 @@ object AppModule {
     @Singleton
     fun provideUserPreferencesRepository(@ApplicationContext context: Context): UserPreferencesRepository { // New provider
         return UserPreferencesRepository(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGeminiAiService(): GeminiAiService {
+        return GeminiAiService(apiKey = BuildConfig.GEMINI_API_KEY)
     }
 }

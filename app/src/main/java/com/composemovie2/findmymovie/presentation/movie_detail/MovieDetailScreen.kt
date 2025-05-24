@@ -269,7 +269,13 @@ fun MovieDetailContent(movie: MovieDetail, state: MovieDetailState, navControlle
                         items(group.providers) { provider ->
                             ProviderChip(
                                 provider = provider,
-                                isSubscribed = state.subscribedProviderIds.contains(provider.providerId.toString()) // Updated
+                                isSubscribed = state.subscribedProviderIds.contains(provider.providerId.toString()), // Updated
+                                onClick = { // Added onClick handler
+                                    group.tmdbLink?.let { link ->
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+                                        context.startActivity(intent)
+                                    }
+                                }
                             )
                         }
                     }
@@ -333,12 +339,14 @@ fun CastCrewItem(
 }
 
 @Composable
-fun ProviderChip(provider: WatchProvider, isSubscribed: Boolean) { // Updated signature
+fun ProviderChip(provider: WatchProvider, isSubscribed: Boolean, onClick: () -> Unit) { // Added onClick
     val cardBorder = if (isSubscribed) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
 
     Card(
         shape = RoundedCornerShape(8.dp),
-        modifier = Modifier.width(100.dp),
+        modifier = Modifier
+            .width(100.dp)
+            .clickable(onClick = onClick), // Added clickable modifier
         border = cardBorder // Apply border
     ) {
         Column(

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -6,6 +8,13 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
 }
+
+val localProps = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { localProps.load(it) }
+}
+rootProject.extra.set("GEMINI_API_KEY", localProps.getProperty("GEMINI_API_KEY", ""))
 
 android {
     namespace = "com.composemovie2.findmymovie"
@@ -19,6 +28,7 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "GEMINI_API_KEY", "\"${rootProject.extra.get("GEMINI_API_KEY") ?: System.getenv("GEMINI_API_KEY") ?: ""}\"")
     }
 
     buildTypes {
@@ -39,6 +49,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -114,4 +125,6 @@ dependencies {
 
     implementation ("androidx.datastore:datastore-preferences:1.1.7")
 
+    // Gemini AI Client
+    implementation("com.google.ai.client.generativeai:generativeai:0.3.0")
 }

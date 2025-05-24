@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.composemovie2.findmymovie.presentation.findmovie.FindMovieScreen // Import for FindMovieScreen
 import com.composemovie2.findmymovie.presentation.movie_detail.MovieDetailScreen
 import com.composemovie2.findmymovie.presentation.movies.views.MoviesScreen
 import com.composemovie2.findmymovie.presentation.person_detail.PersonDetailScreen
@@ -57,6 +58,9 @@ class MainActivity : ComponentActivity() {
                         }
                         composable("SettingsScreen") {
                             SettingsScreen(navController = navController)
+                        }
+                        composable(route = Screen.FindMovieScreen.route) {
+                            FindMovieScreen(navController = navController)
                         }
                     }
                 }

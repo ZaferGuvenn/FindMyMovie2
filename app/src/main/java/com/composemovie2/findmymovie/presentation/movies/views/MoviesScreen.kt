@@ -124,6 +124,11 @@ fun MoviesScreen(
                     }
                 }
             }
+        },
+        floatingActionButton = {
+            FloatingActionButton(onClick = { navController.navigate(com.composemovie2.findmymovie.util.Screen.FindMovieScreen.route) }) {
+                Icon(Icons.Filled.AutoAwesome, "Find Your Movie")
+            }
         }
     ) { paddingValues ->
         Box(
