@@ -3,15 +3,10 @@ package com.composemovie2.findmymovie.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,51 +14,43 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.composemovie2.findmymovie.presentation.movie_detail.MovieDetailScreen
 import com.composemovie2.findmymovie.presentation.movies.views.MoviesScreen
-import com.composemovie2.findmymovie.presentation.theme.FindMyMovie2Theme
+import com.composemovie2.findmymovie.presentation.settings.SettingsScreen // New import
+import com.composemovie2.findmymovie.presentation.ui.theme.FindMyMovieTheme
+import com.composemovie2.findmymovie.util.Screen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
-            FindMyMovie2Theme {
-                Surface(color = MaterialTheme.colorScheme.background) {
-                    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                        MainScreen(
-                            name = "Android",
-                            modifier = Modifier.padding(innerPadding)
-                        )
+            FindMyMovieTheme {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    val navController = rememberNavController()
+                    NavHost(
+                        navController = navController,
+                        startDestination = Screen.MovieScreen.route
+                    ) {
+                        composable(route = Screen.MovieScreen.route) {
+                            MoviesScreen(navController = navController)
+                        }
+                        composable(
+                            route = Screen.MovieDetailScreen.route + "/{movieId}",
+                            arguments = listOf(
+                                navArgument(name = "movieId") { type = NavType.StringType }
+                            )
+                        ) {
+                            MovieDetailScreen(navController = navController)
+                        }
+                        composable("SettingsScreen") { // New Route
+                            SettingsScreen(navController = navController)
+                        }
                     }
                 }
             }
-        }
-    }
-}
-
-@Composable
-fun MainScreen(name: String, modifier: Modifier = Modifier) {
-    val navController = rememberNavController()
-
-    NavHost(
-        navController = navController,
-        startDestination = "MoviesScreen"
-    ) {
-        composable("MoviesScreen") {
-            MoviesScreen(navController)
-        }
-
-        composable(
-            route = "movie_detail_screen/{movieId}",
-            arguments = listOf(
-                navArgument("movieId") {
-                    type = NavType.StringType
-                }
-            )
-        ) { backStackEntry ->
-            val movieId = backStackEntry.arguments?.getString("movieId")
-            MovieDetailScreen(navController = navController)
         }
     }
 }

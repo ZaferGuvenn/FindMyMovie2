@@ -1,5 +1,7 @@
 package com.composemovie2.findmymovie.data.repository
 
+import com.composemovie2.findmymovie.data.local.FavoriteMovieEntity 
+import com.composemovie2.findmymovie.data.local.MovieDao 
 import com.composemovie2.findmymovie.data.remote.MovieAPI
 import com.composemovie2.findmymovie.data.remote.dto.MovieDetailDto // OMDb
 import com.composemovie2.findmymovie.data.remote.dto.MoviesDto // OMDb
@@ -7,46 +9,42 @@ import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbConfigurationDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbGenresResponseDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbMovieDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbMoviesResponseDto
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbWatchProvidersResponseDto
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbCountryDto // New
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbWatchProviderListResponseDto // New
 import com.composemovie2.findmymovie.domain.repository.MovieRepository
 import com.composemovie2.findmymovie.util.Constants
+import kotlinx.coroutines.flow.Flow 
 import javax.inject.Inject
 
 class MovieRepositoryImpl @Inject constructor(
-    private val movieAPI: MovieAPI
-    // No mappers injected here directly, they are used in UseCases or if repository was mapping to Domain Models
+    private val movieAPI: MovieAPI,
+    private val movieDao: MovieDao 
 ): MovieRepository {
 
-    // OMDb - Mark as deprecated or remove
     @Deprecated("Use TMDB equivalent")
     override suspend fun getMoviesDto(searchString: String): MoviesDto {
-        // return movieAPI.getOMDbMovies(searchString = searchString) // Old call
         throw UnsupportedOperationException("OMDb getMoviesDto is deprecated. Use TMDB.")
     }
 
     @Deprecated("Use TMDB equivalent")
     override suspend fun getMovieDetailDto(imdbId: String): MovieDetailDto {
-        // return movieAPI.getOMDbMovieDetail(imdbId = imdbId) // Old call
         throw UnsupportedOperationException("OMDb getMovieDetailDto is deprecated. Use TMDB.")
     }
 
-    // TMDB Implementations
     override suspend fun getTmdbConfiguration(): TmdbConfigurationDto {
         val configuration = movieAPI.getTmdbConfiguration(apiKey = Constants.TMDB_API_KEY)
-        // Store the base URL and poster size if valid
         if (!configuration.images?.secureBaseUrl.isNullOrBlank() && configuration.images?.posterSizes?.contains(Constants.DEFAULT_POSTER_SIZE) == true) {
             Constants.TMDB_IMAGE_BASE_URL = configuration.images.secureBaseUrl
         } else if (!configuration.images?.baseUrl.isNullOrBlank() && configuration.images?.posterSizes?.contains(Constants.DEFAULT_POSTER_SIZE) == true) {
-            // Fallback to non-secure URL if secure is not available but non-secure is.
             Constants.TMDB_IMAGE_BASE_URL = configuration.images.baseUrl
         }
-        // Potentially store other config details like list of poster_sizes if needed elsewhere
         return configuration
     }
 
     override suspend fun getTmdbMovieGenres(): TmdbGenresResponseDto {
-        // Ensure configuration is fetched and image base URL is set, if not already
         if (Constants.TMDB_IMAGE_BASE_URL.isBlank()) {
-            getTmdbConfiguration() // Call to fetch and set the base URL
+            getTmdbConfiguration() 
         }
         return movieAPI.getTmdbMovieGenres(apiKey = Constants.TMDB_API_KEY)
     }
@@ -70,5 +68,55 @@ class MovieRepositoryImpl @Inject constructor(
             getTmdbConfiguration()
         }
         return movieAPI.getTmdbMovieDetails(movieId = movieId, apiKey = Constants.TMDB_API_KEY)
+    }
+
+    override suspend fun getTmdbPopularMovies(page: Int): TmdbMoviesResponseDto {
+        if (Constants.TMDB_IMAGE_BASE_URL.isBlank()) {
+            getTmdbConfiguration() 
+        }
+        return movieAPI.getTmdbPopularMovies(apiKey = Constants.TMDB_API_KEY, page = page)
+    }
+
+    override suspend fun getTmdbNowPlayingMovies(page: Int): TmdbMoviesResponseDto { 
+        if (Constants.TMDB_IMAGE_BASE_URL.isBlank()) { getTmdbConfiguration() }
+        return movieAPI.getTmdbNowPlayingMovies(apiKey = Constants.TMDB_API_KEY, page = page)
+    }
+
+    override suspend fun getTmdbUpcomingMovies(page: Int): TmdbMoviesResponseDto { 
+        if (Constants.TMDB_IMAGE_BASE_URL.isBlank()) { getTmdbConfiguration() }
+        return movieAPI.getTmdbUpcomingMovies(apiKey = Constants.TMDB_API_KEY, page = page)
+    }
+
+    override suspend fun getTmdbMovieWatchProviders(movieId: Int): TmdbWatchProvidersResponseDto { 
+       return movieAPI.getTmdbMovieWatchProviders(movieId = movieId, apiKey = Constants.TMDB_API_KEY)
+   }
+
+    override suspend fun getTmdbConfigurationCountries(): List<TmdbCountryDto> { // New
+        return movieAPI.getTmdbConfigurationCountries(apiKey = Constants.TMDB_API_KEY)
+    }
+
+    override suspend fun getTmdbAllMovieWatchProvidersList(watchRegion: String?): TmdbWatchProviderListResponseDto { // New
+        return movieAPI.getTmdbAllMovieWatchProvidersList(apiKey = Constants.TMDB_API_KEY, watchRegion = watchRegion)
+    }
+
+    // Favorite Movie Implementations
+    override fun getFavoriteMovies(): Flow<List<FavoriteMovieEntity>> {
+        return movieDao.getFavoriteMovies()
+    }
+
+    override fun isFavorite(movieId: Int): Flow<Boolean> {
+        return movieDao.isFavorite(movieId)
+    }
+
+    override suspend fun addFavorite(movie: FavoriteMovieEntity) {
+        movieDao.addFavorite(movie)
+    }
+
+    override suspend fun removeFavoriteById(movieId: Int) {
+        movieDao.removeFavoriteById(movieId)
+    }
+       
+    override suspend fun getFavoriteMovieById(movieId: Int): FavoriteMovieEntity? {
+        return movieDao.getFavoriteMovieById(movieId)
     }
 }

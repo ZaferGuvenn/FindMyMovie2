@@ -10,63 +10,52 @@ import javax.inject.Inject
 
 class TmdbMovieDetailMapper @Inject constructor() : Mapper<TmdbMovieDto, MovieDetail> {
     override fun map(from: TmdbMovieDto): MovieDetail {
-        val posterUrl = if (from.posterPath.isNullOrBlank()) {
-            "" // Or a placeholder image URL
-        } else {
-            "${Constants.TMDB_IMAGE_BASE_URL}${Constants.DEFAULT_POSTER_SIZE}${from.posterPath}"
-        }
+        val baseImageUrl = Constants.TMDB_IMAGE_BASE_URL // Ensure this is populated
+        val posterSize = Constants.DEFAULT_POSTER_SIZE // e.g., "w500"
+        val profileSize = "w185" // A common size for profile pictures
+        val backdropSize = "w780" // A common size for backdrop
 
-        val backdropUrl = if (from.backdropPath.isNullOrBlank()) {
-            null
-        } else {
-            "${Constants.TMDB_IMAGE_BASE_URL}${Constants.DEFAULT_BACKDROP_SIZE}${from.backdropPath}"
-        }
+        val posterUrl = from.posterPath?.let { "$baseImageUrl$posterSize$it" } ?: ""
+        val backdropUrl = from.backdropPath?.let { "$baseImageUrl$backdropSize$it" }
 
-        // Get genre names from either genresFull (movie details) or genreIds (movie list)
-        val genresList = if (!from.genresFull.isNullOrEmpty()) {
-            from.genresFull.mapNotNull { it.name }
-        } else if (!from.genreIds.isNullOrEmpty()) {
-            // If we only have genre IDs, we'll need to map them to names
-            // This would ideally come from a cached genre mapping
-            from.genreIds.map { "Genre $it" }
-        } else {
-            emptyList()
-        }
+        val genreNames = from.genresFull?.mapNotNull { it.name } ?: from.genreIds?.map { it.toString() } ?: emptyList()
 
-        // Get cast and crew from credits if available
-        val cast = from.credits?.cast?.map { castMember ->
+        val castList = from.credits?.cast?.mapNotNull { castDto ->
             CastMember(
-                id = castMember.id ?: 0,
-                name = castMember.name ?: "",
-                character = castMember.character ?: "",
-                profilePath = castMember.profilePath?.let { 
-                    "${Constants.TMDB_IMAGE_BASE_URL}${Constants.DEFAULT_PROFILE_SIZE}$it"
-                }
+                id = castDto.id ?: 0,
+                name = castDto.name ?: "N/A",
+                character = castDto.character ?: "N/A",
+                profilePath = castDto.profilePath?.let { "$baseImageUrl$profileSize$it" }
             )
         } ?: emptyList()
 
-        val crew = from.credits?.crew?.map { crewMember ->
+        // Example: Filter for Director, or take first few key crew members
+        val crewList = from.credits?.crew?.mapNotNull { crewDto ->
             CrewMember(
-                id = crewMember.id ?: 0,
-                name = crewMember.name ?: "",
-                job = crewMember.job ?: "",
-                department = crewMember.department ?: "",
-                profilePath = crewMember.profilePath?.let {
-                    "${Constants.TMDB_IMAGE_BASE_URL}${Constants.DEFAULT_PROFILE_SIZE}$it"
-                }
+                id = crewDto.id ?: 0,
+                name = crewDto.name ?: "N/A",
+                job = crewDto.job ?: "N/A",
+                department = crewDto.department ?: "N/A",
+                profilePath = crewDto.profilePath?.let { "$baseImageUrl$profileSize$it" }
             )
         } ?: emptyList()
+        
+        val director = crewList.firstOrNull { it.job == "Director" }?.name ?: ""
 
-        // Get videos if available
-        val videos = from.videos?.results?.map { video ->
-            Video(
-                id = video.id ?: "",
-                name = video.name ?: "",
-                key = video.key ?: "",
-                site = video.site ?: "",
-                type = video.type ?: "",
-                thumbnailUrl = ""
-            )
+
+        val videoList = from.videos?.results?.mapNotNull { videoDto ->
+            if (videoDto.site == "YouTube" && videoDto.key != null) {
+                Video(
+                    id = videoDto.id ?: videoDto.key!!, // Use key as fallback ID
+                    key = videoDto.key!!,
+                    name = videoDto.name ?: "N/A",
+                    site = videoDto.site!!,
+                    type = videoDto.type ?: "N/A",
+                    thumbnailUrl = "https://img.youtube.com/vi/${videoDto.key}/0.jpg" // Standard YouTube thumbnail
+                )
+            } else {
+                null
+            }
         } ?: emptyList()
 
         return MovieDetail(
@@ -77,19 +66,22 @@ class TmdbMovieDetailMapper @Inject constructor() : Mapper<TmdbMovieDto, MovieDe
             imdbRating = String.format("%.1f", from.voteAverage ?: 0.0),
             language = from.originalLanguage?.uppercase() ?: "N/A",
             overview = from.overview ?: "No overview available.",
-            actors = cast.take(3).joinToString(", ") { it.name }, // First 3 actors
-            awards = "", // TMDB doesn't provide awards
-            country = from.originalLanguage ?: "", // Using original language as country for now
-            director = crew.find { it.job.equals("Director", ignoreCase = true) }?.name ?: "",
+            
+            actors = "", // Deprecate: use castList.joinToString { it.name } if a string is needed
+            awards = "", // No direct mapping from current DTO fields
+            country = from.originalLanguage ?: "", // Deprecate: TMDB has production_countries list
+            director = director, // Extracted from crewList
+            
             backdropPath = backdropUrl,
             runtime = from.runtime,
-            tagline = from.tagline,
+            tagline = from.tagline?.takeIf { it.isNotBlank() }, // Use tagline only if not blank
             status = from.status,
             voteCount = from.voteCount,
-            genresList = genresList,
-            cast = cast,
-            crew = crew,
-            videos = videos
+            genresList = genreNames,
+            
+            cast = castList,
+            crew = crewList, // Could be further filtered for specific roles if needed
+            videos = videoList.filter { it.type == "Trailer" || it.type == "Teaser" } // Filter for trailers/teasers
         )
     }
 }
