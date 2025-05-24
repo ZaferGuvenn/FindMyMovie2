@@ -13,8 +13,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.distinctUntilChanged 
 import javax.inject.Inject
 
 @HiltViewModel

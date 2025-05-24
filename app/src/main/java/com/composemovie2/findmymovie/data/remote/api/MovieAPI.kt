@@ -37,4 +37,10 @@ interface MovieAPI {
     suspend fun getPersonCombinedCredits(
         @Path("person_id") personId: Int
     ): Response<CombinedCreditsResponseDto>
+
+    @GET("configuration")
+    suspend fun getConfiguration(): Response<TmdbConfigurationDto>
+
+    @GET("genre/movie/list")
+    suspend fun getMovieGenres(@Query("language") language: String = "en-US"): Response<TmdbGenresResponseDto>
 } 

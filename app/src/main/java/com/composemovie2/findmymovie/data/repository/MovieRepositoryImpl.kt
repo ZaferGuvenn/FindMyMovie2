@@ -55,95 +55,40 @@ class MovieRepositoryImpl @Inject constructor(
     // If these older methods are still needed, they might require a differently qualified MovieAPI instance.
 
     override suspend fun getTmdbConfiguration(): TmdbConfigurationDto {
-        // This method seems to call a version of movieAPI that is NOT the one from data.remote.api
-        // as it passes apiKey directly. This needs to be reconciled if there are two MovieAPI interfaces.
-        // For now, assuming this part is not causing the reported errors.
-        // To make it work with data.remote.api.MovieAPI, it would need an interceptor for apiKey.
-        // Or, it's using a different, non-Hilt injected, instance of an older MovieAPI.
-        // This function is NOT mentioned in the error logs.
-        val service = (movieAPI as? com.composemovie2.findmymovie.data.remote.MovieAPI) 
-            ?: throw IllegalStateException("Incorrect MovieAPI instance for this direct configuration call. Expected com.composemovie2.findmymovie.data.remote.MovieAPI, got ${movieAPI::class.java.name}")
-        val configuration = service.getTmdbConfiguration(apiKey = Constants.TMDB_API_KEY)
-        if (!configuration.images?.secureBaseUrl.isNullOrBlank() && configuration.images?.posterSizes?.contains(Constants.DEFAULT_POSTER_SIZE) == true) {
-            Constants.TMDB_IMAGE_BASE_URL = configuration.images.secureBaseUrl
-        } else if (!configuration.images?.baseUrl.isNullOrBlank() && configuration.images?.posterSizes?.contains(Constants.DEFAULT_POSTER_SIZE) == true) {
-            Constants.TMDB_IMAGE_BASE_URL = configuration.images.baseUrl
+        val response = movieAPI.getConfiguration() // Call new interface method
+        if (response.isSuccessful && response.body() != null) {
+            val configuration = response.body()!!
+            if (!configuration.images?.secureBaseUrl.isNullOrBlank() && configuration.images?.posterSizes?.contains(Constants.DEFAULT_POSTER_SIZE) == true) {
+                Constants.TMDB_IMAGE_BASE_URL = configuration.images.secureBaseUrl
+            } else if (!configuration.images?.baseUrl.isNullOrBlank() && configuration.images?.posterSizes?.contains(Constants.DEFAULT_POSTER_SIZE) == true) {
+                Constants.TMDB_IMAGE_BASE_URL = configuration.images.baseUrl
+            }
+            return configuration
+        } else {
+            throw java.io.IOException("Failed to fetch TMDB configuration: ${response.code()} ${response.message()}")
         }
-        return configuration
     }
 
-    // Similar assumption for the methods below as for getTmdbConfiguration - they are not the source of reported errors.
     override suspend fun getTmdbMovieGenres(): TmdbGenresResponseDto {
-        if (Constants.TMDB_IMAGE_BASE_URL.isBlank()) { getTmdbConfiguration() }
-        val service = (movieAPI as? com.composemovie2.findmymovie.data.remote.MovieAPI) 
-            ?: throw IllegalStateException("Incorrect MovieAPI instance for this direct configuration call. Expected com.composemovie2.findmymovie.data.remote.MovieAPI, got ${movieAPI::class.java.name}")
-        return service.getTmdbMovieGenres(apiKey = Constants.TMDB_API_KEY)
+        if (Constants.TMDB_IMAGE_BASE_URL.isBlank()) {
+            try { // Add try-catch for getTmdbConfiguration in case it fails
+                getTmdbConfiguration()
+            } catch (e: Exception) {
+                // Log or handle error, rethrow or return empty/error state for genres
+                throw java.io.IOException("Failed to get genres due to configuration error: ${e.message}", e)
+            }
+        }
+        val response = movieAPI.getMovieGenres() // Call new interface method
+        if (response.isSuccessful && response.body() != null) {
+            return response.body()!!
+        } else {
+            throw java.io.IOException("Failed to fetch TMDB genres: ${response.code()} ${response.message()}")
+        }
     }
 
-    override suspend fun discoverTmdbMoviesByGenre(genreId: String, page: Int): TmdbMoviesResponseDto {
-        if (Constants.TMDB_IMAGE_BASE_URL.isBlank()) { getTmdbConfiguration() }
-         val service = (movieAPI as? com.composemovie2.findmymovie.data.remote.MovieAPI) 
-            ?: throw IllegalStateException("Incorrect MovieAPI instance for this direct configuration call. Expected com.composemovie2.findmymovie.data.remote.MovieAPI, got ${movieAPI::class.java.name}")
-        return service.discoverTmdbMoviesByGenre(apiKey = Constants.TMDB_API_KEY, genreId = genreId, page = page)
-    }
-
-    // This one IS used by searchMovies, but searchMovies (below) uses the Hilt-injected API.
-    // This version of searchTmdbMovies is likely an older, differently purposed method.
-    override suspend fun searchTmdbMovies(query: String, page: Int): TmdbMoviesResponseDto {
-        if (Constants.TMDB_IMAGE_BASE_URL.isBlank()) { getTmdbConfiguration() }
-        val service = (movieAPI as? com.composemovie2.findmymovie.data.remote.MovieAPI) 
-            ?: throw IllegalStateException("Incorrect MovieAPI instance for this direct configuration call. Expected com.composemovie2.findmymovie.data.remote.MovieAPI, got ${movieAPI::class.java.name}")
-        return service.searchTmdbMovies(apiKey = Constants.TMDB_API_KEY, query = query, page = page)
-    }
-    
-    // This one IS used by getMovieDetails, but getMovieDetails (below) uses the Hilt-injected API.
-    override suspend fun getTmdbMovieDetails(movieId: Int): TmdbMovieDto {
-        if (Constants.TMDB_IMAGE_BASE_URL.isBlank()) { getTmdbConfiguration() }
-        val service = (movieAPI as? com.composemovie2.findmymovie.data.remote.MovieAPI) 
-            ?: throw IllegalStateException("Incorrect MovieAPI instance for this direct configuration call. Expected com.composemovie2.findmymovie.data.remote.MovieAPI, got ${movieAPI::class.java.name}")
-        return service.getTmdbMovieDetails(movieId = movieId, apiKey = Constants.TMDB_API_KEY)
-    }
-
-    // This one IS used by getMovies, but getMovies (below) uses the Hilt-injected API.
-    override suspend fun getTmdbPopularMovies(page: Int): TmdbMoviesResponseDto {
-        if (Constants.TMDB_IMAGE_BASE_URL.isBlank()) { getTmdbConfiguration() }
-        val service = (movieAPI as? com.composemovie2.findmymovie.data.remote.MovieAPI) 
-            ?: throw IllegalStateException("Incorrect MovieAPI instance for this direct configuration call. Expected com.composemovie2.findmymovie.data.remote.MovieAPI, got ${movieAPI::class.java.name}")
-        return service.getTmdbPopularMovies(apiKey = Constants.TMDB_API_KEY, page = page)
-    }
-
-    override suspend fun getTmdbNowPlayingMovies(page: Int): TmdbMoviesResponseDto { 
-        if (Constants.TMDB_IMAGE_BASE_URL.isBlank()) { getTmdbConfiguration() }
-        val service = (movieAPI as? com.composemovie2.findmymovie.data.remote.MovieAPI) 
-            ?: throw IllegalStateException("Incorrect MovieAPI instance for this direct configuration call. Expected com.composemovie2.findmymovie.data.remote.MovieAPI, got ${movieAPI::class.java.name}")
-        return service.getTmdbNowPlayingMovies(apiKey = Constants.TMDB_API_KEY, page = page)
-    }
-
-    override suspend fun getTmdbUpcomingMovies(page: Int): TmdbMoviesResponseDto { 
-        if (Constants.TMDB_IMAGE_BASE_URL.isBlank()) { getTmdbConfiguration() }
-        val service = (movieAPI as? com.composemovie2.findmymovie.data.remote.MovieAPI) 
-            ?: throw IllegalStateException("Incorrect MovieAPI instance for this direct configuration call. Expected com.composemovie2.findmymovie.data.remote.MovieAPI, got ${movieAPI::class.java.name}")
-        return service.getTmdbUpcomingMovies(apiKey = Constants.TMDB_API_KEY, page = page)
-    }
-
-    // This one IS used by MovieDetailViewModel, but the ViewModel should use getMovieDetails which uses the Hilt-injected API.
-    override suspend fun getTmdbMovieWatchProviders(movieId: Int): TmdbWatchProvidersResponseDto {
-       val service = (movieAPI as? com.composemovie2.findmymovie.data.remote.MovieAPI) 
-            ?: throw IllegalStateException("Incorrect MovieAPI instance for this direct configuration call. Expected com.composemovie2.findmymovie.data.remote.MovieAPI, got ${movieAPI::class.java.name}")
-       return service.getTmdbMovieWatchProviders(movieId = movieId, apiKey = Constants.TMDB_API_KEY)
-   }
-
-    override suspend fun getTmdbConfigurationCountries(): List<TmdbCountryDto> {
-        val service = (movieAPI as? com.composemovie2.findmymovie.data.remote.MovieAPI) 
-            ?: throw IllegalStateException("Incorrect MovieAPI instance for this direct configuration call. Expected com.composemovie2.findmymovie.data.remote.MovieAPI, got ${movieAPI::class.java.name}")
-        return service.getTmdbConfigurationCountries(apiKey = Constants.TMDB_API_KEY)
-    }
-
-    override suspend fun getTmdbAllMovieWatchProvidersList(watchRegion: String?): TmdbWatchProviderListResponseDto {
-        val service = (movieAPI as? com.composemovie2.findmymovie.data.remote.MovieAPI) 
-            ?: throw IllegalStateException("Incorrect MovieAPI instance for this direct configuration call. Expected com.composemovie2.findmymovie.data.remote.MovieAPI, got ${movieAPI::class.java.name}")
-        return service.getTmdbAllMovieWatchProvidersList(apiKey = Constants.TMDB_API_KEY, watchRegion = watchRegion)
-    }
+    // The redundant methods that returned raw DTOs and used the old API key passing mechanism are now removed.
+    // Their functionality is covered by the overridden methods (getMovies, getMovieDetails, searchMovies, etc.)
+    // which use the new API interface and return NetworkResult<DomainModel>.
 
     // Favorite Movie Implementations
     override fun getFavoriteMovies(): Flow<List<FavoriteMovieEntity>> {

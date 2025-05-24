@@ -6,7 +6,6 @@ import com.composemovie2.findmymovie.domain.model.Movie
 import com.composemovie2.findmymovie.domain.model.PersonDetail
 import com.composemovie2.findmymovie.domain.model.TVShow
 import com.composemovie2.findmymovie.domain.repository.MovieRepository
-import com.composemovie2.findmymovie.util.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

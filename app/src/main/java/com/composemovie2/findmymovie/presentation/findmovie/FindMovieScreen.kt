@@ -1,7 +1,6 @@
 package com.composemovie2.findmymovie.presentation.findmovie
 
 // import androidx.compose.foundation.layout.Arrangement // Removed duplicate
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement // Kept one
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
