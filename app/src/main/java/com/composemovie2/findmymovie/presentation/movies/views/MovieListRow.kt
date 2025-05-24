@@ -77,7 +77,7 @@ fun MovieListRow(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = movie.year,
+                        text = movie.year ?: "N/A", // Added null safety
                         style = MaterialTheme.typography.bodyMedium,
                         color = Color.White.copy(alpha = 0.8f)
                     )

@@ -16,11 +16,25 @@ class GetFavoriteMoviesUseCase @Inject constructor(
         return repository.getFavoriteMovies().map { entities ->
             entities.map { entity ->
                 Movie(
-                    imdbId = entity.movieId.toString(), // TMDB ID
+                    id = entity.movieId,
                     title = entity.title,
-                    posterPath = entity.posterPath?.let { "${Constants.TMDB_IMAGE_BASE_URL}${Constants.DEFAULT_POSTER_SIZE}$it" }, // Changed poster to posterPath
-                    year = entity.releaseDate?.substringBefore("-") ?: "N/A"
-                    // Removed type = "movie"
+                    overview = entity.overview,
+                    posterPath = entity.posterPath, // Use the raw path from entity
+                    backdropPath = null, // Not typically stored/needed for a favorites list item
+                    releaseDate = entity.releaseDate,
+                    voteAverage = entity.voteAverage,
+                    voteCount = null, // Not available in FavoriteMovieEntity
+                    popularity = null, // Not available in FavoriteMovieEntity
+                    genres = null, // Not typically stored/needed for a favorites list item
+                    status = null, // Not available in FavoriteMovieEntity
+                    runtime = null, // Not available in FavoriteMovieEntity
+                    imdbRating = entity.voteAverage, // Can use voteAverage as a stand-in if specific IMDb rating isn't stored
+                    imdbVotes = null, // Not available in FavoriteMovieEntity
+                    imdbId = null, // FavoriteMovieEntity stores TMDB ID (movieId), not IMDb string ID
+                    budget = null, // Not available in FavoriteMovieEntity
+                    revenue = null, // Not available in FavoriteMovieEntity
+                    tagline = null, // Not available in FavoriteMovieEntity
+                    year = entity.releaseDate?.substringBefore("-") // Existing year extraction logic is fine
                 )
             }
         }

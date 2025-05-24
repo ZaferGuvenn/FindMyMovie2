@@ -76,19 +76,25 @@ class MovieDetailViewModel @Inject constructor(
     }
 
     private fun fetchMovieDetail(movieId: Int) {
-        getMovieDetailUseCase.executeGetMovieDetail(movieId).onEach { result ->
+        viewModelScope.launch {
+            // Set initial loading state before making the call
+            _state.value = _state.value.copy(isLoading = true, errorMsg = null)
+            val result = getMovieDetailUseCase.executeGetMovieDetail(movieId) // suspend call
             when (result) {
                 is NetworkResult.Success -> {
                     _state.value = _state.value.copy(movieDetail = result.data, isLoading = false, errorMsg = null)
                 }
-                is NetworkResult.Loading -> {
-                    _state.value = _state.value.copy(isLoading = true, errorMsg = null)
-                }
                 is NetworkResult.Error -> {
                     _state.value = _state.value.copy(isLoading = false, errorMsg = result.message ?: "An unknown error occurred fetching details")
                 }
+                is NetworkResult.Loading -> {
+                    // This case might be redundant if isLoading is set prior to the call,
+                    // but kept for exhaustiveness if the UseCase emits it.
+                    _state.value = _state.value.copy(isLoading = true, errorMsg = null)
+                }
+                // No else needed if all sealed class subtypes are covered
             }
-        }.launchIn(viewModelScope)
+        }
     }
 
     private fun observeFavoriteStatus(movieId: Int) {

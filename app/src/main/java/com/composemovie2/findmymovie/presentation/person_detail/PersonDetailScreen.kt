@@ -9,9 +9,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Movie
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Movie // Already here
+import androidx.compose.material.icons.filled.Person // Already here
+import androidx.compose.material.icons.outlined.Movie // Add this
 import androidx.compose.material3.*
+import androidx.compose.ui.graphics.vector.rememberVectorPainter // Added import
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -110,7 +112,7 @@ fun PersonDetailContent(
                 .fillMaxWidth()
                 .height(300.dp),
             contentScale = ContentScale.Crop,
-            error = Icons.Filled.Person // Updated
+            error = rememberVectorPainter(image = Icons.Filled.Person) // Updated
         )
 
         Column(
@@ -188,7 +190,7 @@ fun MovieItem(movie: Movie) {
                     .fillMaxWidth()
                     .height(150.dp),
                 contentScale = ContentScale.Crop,
-                error = Icons.Outlined.Movie // Updated
+                error = rememberVectorPainter(image = Icons.Outlined.Movie) // Updated
             )
             Text(
                 text = movie.title,
@@ -217,7 +219,7 @@ fun TVShowItem(tvShow: TVShow) {
                     .fillMaxWidth()
                     .height(150.dp),
                 contentScale = ContentScale.Crop,
-                error = Icons.Outlined.Movie // Updated
+                error = rememberVectorPainter(image = Icons.Outlined.Movie) // Updated
             )
             Text(
                 text = tvShow.name,

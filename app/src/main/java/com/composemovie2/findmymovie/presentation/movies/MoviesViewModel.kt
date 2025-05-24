@@ -64,18 +64,17 @@ class MoviesViewModel @Inject constructor(
     }
 
     private fun loadMovies(
-        genreId: String? = null, 
-        searchQuery: String? = null, 
-        fetchPopular: Boolean = false,
-        fetchNowPlaying: Boolean = false,
-        fetchUpcoming: Boolean = false,
+        searchQuery: String? = null, // Simplified parameters
         page: Int = 1
     ) {
-        favoritesJob?.cancel() 
+        favoritesJob?.cancel()
         moviesJob?.cancel()
-        moviesJob = getMoviesUseCase.executeGetMovies(
-            genreId, searchQuery, fetchPopular, fetchNowPlaying, fetchUpcoming, page
-        ).onEach { result -> 
+        viewModelScope.launch { // Wrap in viewModelScope.launch
+            _state.value = _state.value.copy(isLoading = true, errorMsg = "") // Set loading state
+            val result = getMoviesUseCase.executeGetMovies(
+                searchQuery = searchQuery, 
+                page = page
+            ) // suspend call
             when (result) {
                 is NetworkResult.Success -> {
                     _state.value = _state.value.copy(
@@ -84,17 +83,20 @@ class MoviesViewModel @Inject constructor(
                         errorMsg = ""
                     )
                 }
-                is NetworkResult.Loading -> {
-                    _state.value = _state.value.copy(isLoading = true, errorMsg = "")
-                }
                 is NetworkResult.Error -> {
                     _state.value = _state.value.copy(
                         isLoading = false,
                         errorMsg = result.message ?: "Error loading movies"
                     )
                 }
+                is NetworkResult.Loading -> {
+                    // This case might be redundant if isLoading is set prior to the call,
+                    // but kept for exhaustiveness if the UseCase emits it.
+                     _state.value = _state.value.copy(isLoading = true, errorMsg = "")
+                }
+                // No else needed if all sealed class subtypes are covered
             }
-        }.launchIn(viewModelScope)
+        }
     }
     
     private fun loadFavoriteMovies() {
@@ -123,7 +125,7 @@ class MoviesViewModel @Inject constructor(
                 val title = if (event.searchQuery.isBlank()) "Popular" else "Search: \"${event.searchQuery}\""
                 _state.value = _state.value.copy(currentListTitle = title, isGenreListVisible = true)
                 if (event.searchQuery.isBlank()) {
-                    loadMovies(fetchPopular = true) 
+                    loadMovies() // Load popular
                 } else {
                     loadMovies(searchQuery = event.searchQuery)
                 }
@@ -131,19 +133,22 @@ class MoviesViewModel @Inject constructor(
             is MoviesEvent.SearchByGenre -> {
                 val genreName = _state.value.genres.find { it.id.toString() == event.genreId }?.name ?: "Genre"
                 _state.value = _state.value.copy(currentListTitle = genreName, isGenreListVisible = true)
-                loadMovies(genreId = event.genreId)
+                // Defaulting to search by genre name as per task description
+                loadMovies(searchQuery = genreName) 
             }
             is MoviesEvent.LoadPopularMovies -> {
                 _state.value = _state.value.copy(currentListTitle = "Popular", isGenreListVisible = true)
-                loadMovies(fetchPopular = true)
+                loadMovies()
             }
             is MoviesEvent.LoadNowPlayingMovies -> {
+                 // Defaulting to popular movies as per task description
                 _state.value = _state.value.copy(currentListTitle = "Now Playing", isGenreListVisible = true)
-                loadMovies(fetchNowPlaying = true)
+                loadMovies()
             }
             is MoviesEvent.LoadUpcomingMovies -> {
+                 // Defaulting to popular movies as per task description
                 _state.value = _state.value.copy(currentListTitle = "Upcoming", isGenreListVisible = true)
-                loadMovies(fetchUpcoming = true)
+                loadMovies()
             }
             is MoviesEvent.LoadFavoriteMovies -> { 
                 loadFavoriteMovies()

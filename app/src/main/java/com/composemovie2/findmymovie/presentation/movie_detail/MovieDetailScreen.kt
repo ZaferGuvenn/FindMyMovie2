@@ -47,7 +47,8 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Favorite 
 import androidx.compose.material.icons.filled.FavoriteBorder 
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.graphics.painter.Painter
+// import androidx.compose.ui.graphics.painter.Painter // No longer directly used for icons
+import androidx.compose.ui.graphics.vector.rememberVectorPainter // Added import
 import com.composemovie2.findmymovie.util.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -138,7 +139,7 @@ fun MovieDetailContent(movie: MovieDetail, state: MovieDetailState, navControlle
                     .fillMaxWidth()
                     .height(220.dp),
                 contentScale = ContentScale.Crop,
-                error = Icons.Outlined.BrokenImage // Updated
+                error = rememberVectorPainter(image = Icons.Outlined.BrokenImage) // Updated
             )
         } else {
             Box(
@@ -196,7 +197,7 @@ fun MovieDetailContent(movie: MovieDetail, state: MovieDetailState, navControlle
                                         .height(100.dp)
                                         .fillMaxWidth(),
                                     contentScale = ContentScale.Crop,
-                                    error = Icons.Outlined.BrokenImage // Updated
+                                    error = rememberVectorPainter(image = Icons.Outlined.BrokenImage) // Updated
                                 )
                                 Icon(
                                     Icons.Filled.PlayCircleOutline,
@@ -311,7 +312,7 @@ fun CastCrewItem(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
                 contentScale = ContentScale.Crop,
-                error = Icons.Filled.Person // Updated
+                error = rememberVectorPainter(image = Icons.Filled.Person) // Updated
             )
             Column(
                 modifier = Modifier
@@ -362,7 +363,7 @@ fun ProviderChip(provider: WatchProvider, isSubscribed: Boolean, onClick: () -> 
                         .width(40.dp)
                         .clip(RoundedCornerShape(4.dp)),
                     contentScale = ContentScale.Fit,
-                    error = Icons.Outlined.BrokenImage // Updated
+                    error = rememberVectorPainter(image = Icons.Outlined.BrokenImage) // Updated
                 )
                 if (isSubscribed) {
                     Icon(

@@ -91,6 +91,14 @@ class FindMovieViewModel @Inject constructor(
                             // Optionally add a note to the reason or a specific error field in RecommendedMovieItem
                             // For now, just add it as is.
                         }
+                        is NetworkResult.Loading -> {
+                            // This specific item is loading.
+                            // We might not update the individual item state here if the overall isLoading is true.
+                            // For now, we'll just let the overall loading indicator handle this.
+                            // If needed, we could add a loading flag to RecommendedMovieItem.
+                            // We still need to add the 'rec' to enhancedRecommendations or it will be lost.
+                            enhancedRecommendations.add(rec) // Add the item, its TMDB details are still loading
+                        }
                     }
                 }
                 _uiState.update { it.copy(isLoading = false, recommendations = enhancedRecommendations, error = null) }

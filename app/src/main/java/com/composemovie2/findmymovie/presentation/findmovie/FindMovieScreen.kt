@@ -1,13 +1,7 @@
 package com.composemovie2.findmymovie.presentation.findmovie
 
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
+// import androidx.compose.foundation.layout.Arrangement // Removed duplicate
+import androidx.compose.foundation.layout.Arrangement // Kept one
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,11 +12,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.BrokenImage
+import androidx.compose.material.icons.outlined.Movie // Added for consistency in RecommendedMovieCard placeholder
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -45,9 +41,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.rememberVectorPainter // Added import
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
+// import androidx.compose.ui.res.painterResource // No longer used directly for icons
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -167,7 +164,7 @@ fun RecommendedMovieCard(movie: RecommendedMovieItem, onClick: () -> Unit) {
                         .size(width = 100.dp, height = 150.dp)
                         .clip(MaterialTheme.shapes.medium),
                     contentScale = ContentScale.Crop,
-                    error = Icons.Outlined.BrokenImage 
+                    error = rememberVectorPainter(image = Icons.Outlined.BrokenImage) // Updated
                 )
             } else {
                 Box(
@@ -177,7 +174,7 @@ fun RecommendedMovieCard(movie: RecommendedMovieItem, onClick: () -> Unit) {
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = Icons.Outlined.Movie, 
+                        imageVector = Icons.Outlined.Movie, // This is correct for Icon
                         contentDescription = "No image available",
                         modifier = Modifier.size(48.dp)
                     )
