@@ -121,7 +121,7 @@ class MovieDetailViewModel @Inject constructor(
                     }
                     val favoriteEntity = FavoriteMovieEntity(
                         movieId = movieId, title = movieDetail.title, posterPath = posterPathOnly,
-                        overview = movieDetail.overview, releaseDate = movieDetail.releaseDate, // Changed from movieDetail.released
+                        overview = movieDetail.overview?:"", releaseDate = movieDetail.releaseDate, // Changed from movieDetail.released
                         voteAverage = movieDetail.voteAverage // Changed from movieDetail.imdbRating.toDoubleOrNull()
                     )
                     addFavoriteMovieUseCase.execute(favoriteEntity)
