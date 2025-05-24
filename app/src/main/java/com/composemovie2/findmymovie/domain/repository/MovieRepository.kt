@@ -11,6 +11,11 @@ import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbWatchProvidersResp
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbCountryDto // New
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbWatchProviderListResponseDto // New
 import kotlinx.coroutines.flow.Flow 
+import com.composemovie2.findmymovie.domain.model.Movie
+import com.composemovie2.findmymovie.domain.model.MovieDetail
+import com.composemovie2.findmymovie.domain.model.PersonDetail
+import com.composemovie2.findmymovie.domain.model.TVShow
+import com.composemovie2.findmymovie.util.NetworkResult
 
 interface MovieRepository {
     // OMDb methods (to be removed or fully replaced)
@@ -38,4 +43,11 @@ interface MovieRepository {
     suspend fun addFavorite(movie: FavoriteMovieEntity)
     suspend fun removeFavoriteById(movieId: Int)
     suspend fun getFavoriteMovieById(movieId: Int): FavoriteMovieEntity?
+
+    suspend fun getMovies(page: Int): NetworkResult<List<Movie>>
+    suspend fun getMovieDetails(movieId: Int): NetworkResult<MovieDetail>
+    suspend fun searchMovies(query: String, page: Int): NetworkResult<List<Movie>>
+    suspend fun getPersonDetails(personId: Int): NetworkResult<PersonDetail>
+    suspend fun getPersonMovies(personId: Int): NetworkResult<List<Movie>>
+    suspend fun getPersonTVShows(personId: Int): NetworkResult<List<TVShow>>
 }

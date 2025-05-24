@@ -81,7 +81,8 @@ class TmdbMovieDetailMapper @Inject constructor() : Mapper<TmdbMovieDto, MovieDe
             
             cast = castList,
             crew = crewList, // Could be further filtered for specific roles if needed
-            videos = videoList.filter { it.type == "Trailer" || it.type == "Teaser" } // Filter for trailers/teasers
-        )
+            videos = videoList.filter { it.type == "Trailer" || it.type == "Teaser" }, // Filter for trailers/teasers
+            watchProviderGroups = null
+            )
     }
 }

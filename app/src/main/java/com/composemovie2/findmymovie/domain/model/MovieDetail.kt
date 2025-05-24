@@ -4,28 +4,21 @@ package com.composemovie2.findmymovie.domain.model
 // if they are in the same package, which they are.
 
 data class MovieDetail(
-    // Existing fields from the last update
+    val id: Int,
     val title: String,
-    val year: String,
-    val poster: String,
-    val released: String,
-    val imdbRating: String,
-    val language: String,
-    val overview: String,
-    val actors: String, 
-    val awards: String,
-    val country: String,
-    val director: String, 
+    val overview: String?,
+    val posterPath: String?,
     val backdropPath: String?,
-    val runtime: Int?,
-    val tagline: String?,
-    val status: String?,
+    val releaseDate: String?,
+    val voteAverage: Double?,
     val voteCount: Int?,
-    val genresList: List<String>,
-    val cast: List<CastMember>,
-    val crew: List<CrewMember>,
-    val videos: List<Video>,
-
-    // New field for watch providers
-    val watchProviderGroups: List<WatchProviderGroup>? // New
+    val popularity: Double?,
+    val genres: List<Genre>?,
+    val status: String?,
+    val runtime: Int?,
+    val imdbId: String?,
+    val budget: Long?,
+    val revenue: Long?,
+    val tagline: String?,
+    val year: String?
 )

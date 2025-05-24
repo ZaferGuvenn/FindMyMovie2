@@ -12,8 +12,13 @@ import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbMoviesResponseDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbWatchProvidersResponseDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbCountryDto // New
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbWatchProviderListResponseDto // New
+import com.composemovie2.findmymovie.domain.model.Movie
+import com.composemovie2.findmymovie.domain.model.MovieDetail
+import com.composemovie2.findmymovie.domain.model.PersonDetail
+import com.composemovie2.findmymovie.domain.model.TVShow
 import com.composemovie2.findmymovie.domain.repository.MovieRepository
 import com.composemovie2.findmymovie.util.Constants
+import com.composemovie2.findmymovie.util.NetworkResult
 import kotlinx.coroutines.flow.Flow 
 import javax.inject.Inject
 
@@ -118,5 +123,101 @@ class MovieRepositoryImpl @Inject constructor(
        
     override suspend fun getFavoriteMovieById(movieId: Int): FavoriteMovieEntity? {
         return movieDao.getFavoriteMovieById(movieId)
+    }
+
+    override suspend fun getMovies(page: Int): NetworkResult<List<Movie>> {
+        return try {
+            val response = movieAPI.getTmdbPopularMovies(page)
+            if (response.isSuccessful) {
+                response.body()?.let { movieListDto ->
+                    NetworkResult.Success(movieListDto.results.map { it.toMovie() })
+                } ?: NetworkResult.Error("Movies not found")
+            } else {
+                NetworkResult.Error(response.message())
+            }
+        } catch (e: Exception) {
+            NetworkResult.Error(e.message ?: "An error occurred")
+        }
+    }
+
+    override suspend fun getMovieDetails(movieId: Int): NetworkResult<MovieDetail> {
+        return try {
+            val response = movieAPI.getTmdbMovieDetails(movieId)
+            if (response.isSuccessful) {
+                response.body()?.let { movieDetailDto ->
+                    NetworkResult.Success(movieDetailDto.toMovieDetail())
+                } ?: NetworkResult.Error("Movie details not found")
+            } else {
+                NetworkResult.Error(response.message())
+            }
+        } catch (e: Exception) {
+            NetworkResult.Error(e.message ?: "An error occurred")
+        }
+    }
+
+    override suspend fun searchMovies(query: String, page: Int): NetworkResult<List<Movie>> {
+        return try {
+            val response = movieAPI.searchTmdbMovies(query, page)
+            if (response.isSuccessful) {
+                response.body()?.let { movieListDto ->
+                    NetworkResult.Success(movieListDto.results.map { it.toMovie() })
+                } ?: NetworkResult.Error("Movies not found")
+            } else {
+                NetworkResult.Error(response.message())
+            }
+        } catch (e: Exception) {
+            NetworkResult.Error(e.message ?: "An error occurred")
+        }
+    }
+
+    override suspend fun getPersonDetails(personId: Int): NetworkResult<PersonDetail> {
+        return try {
+            val response = movieAPI.getPersonDetails(personId)
+            if (response.isSuccessful) {
+                response.body()?.let { personDto ->
+                    NetworkResult.Success(personDto.toPersonDetail())
+                } ?: NetworkResult.Error("Person details not found")
+            } else {
+                NetworkResult.Error(response.message())
+            }
+        } catch (e: Exception) {
+            NetworkResult.Error(e.message ?: "An error occurred")
+        }
+    }
+
+    override suspend fun getPersonMovies(personId: Int): NetworkResult<List<Movie>> {
+        return try {
+            val response = movieAPI.getPersonCombinedCredits(personId)
+            if (response.isSuccessful) {
+                response.body()?.let { creditsDto ->
+                    val movies = creditsDto.cast
+                        .filter { it.media_type == "movie" }
+                        .map { it.toMovie() }
+                    NetworkResult.Success(movies)
+                } ?: NetworkResult.Error("Person movies not found")
+            } else {
+                NetworkResult.Error(response.message())
+            }
+        } catch (e: Exception) {
+            NetworkResult.Error(e.message ?: "An error occurred")
+        }
+    }
+
+    override suspend fun getPersonTVShows(personId: Int): NetworkResult<List<TVShow>> {
+        return try {
+            val response = movieAPI.getPersonCombinedCredits(personId)
+            if (response.isSuccessful) {
+                response.body()?.let { creditsDto ->
+                    val tvShows = creditsDto.cast
+                        .filter { it.media_type == "tv" }
+                        .map { it.toTVShow() }
+                    NetworkResult.Success(tvShows)
+                } ?: NetworkResult.Error("Person TV shows not found")
+            } else {
+                NetworkResult.Error(response.message())
+            }
+        } catch (e: Exception) {
+            NetworkResult.Error(e.message ?: "An error occurred")
+        }
     }
 }

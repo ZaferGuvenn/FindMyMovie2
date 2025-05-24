@@ -14,9 +14,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.composemovie2.findmymovie.presentation.movie_detail.MovieDetailScreen
 import com.composemovie2.findmymovie.presentation.movies.views.MoviesScreen
+import com.composemovie2.findmymovie.presentation.person_detail.PersonDetailScreen
 import com.composemovie2.findmymovie.presentation.settings.SettingsScreen // New import
-import com.composemovie2.findmymovie.presentation.ui.theme.FindMyMovieTheme
+import com.composemovie2.findmymovie.presentation.theme.FindMyMovie2Theme
 import com.composemovie2.findmymovie.util.Screen
+import com.composemovie2.findmymovie.util.Screen.PersonDetailScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -24,7 +26,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            FindMyMovieTheme {
+            FindMyMovie2Theme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
@@ -45,7 +47,15 @@ class MainActivity : ComponentActivity() {
                         ) {
                             MovieDetailScreen(navController = navController)
                         }
-                        composable("SettingsScreen") { // New Route
+                        composable(
+                            route = Screen.PersonDetailScreen.route,
+                            arguments = listOf(
+                                navArgument(name = "personId") { type = NavType.IntType }
+                            )
+                        ) {
+                            PersonDetailScreen(navController = navController)
+                        }
+                        composable("SettingsScreen") {
                             SettingsScreen(navController = navController)
                         }
                     }
