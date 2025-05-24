@@ -1,13 +1,16 @@
 package com.composemovie2.findmymovie.domain.repository
 
-import com.composemovie2.findmymovie.data.local.FavoriteMovieEntity // New import
+import com.composemovie2.findmymovie.data.local.FavoriteMovieEntity 
 import com.composemovie2.findmymovie.data.remote.dto.MovieDetailDto // OMDb
 import com.composemovie2.findmymovie.data.remote.dto.MoviesDto // OMDb
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbConfigurationDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbGenresResponseDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbMovieDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbMoviesResponseDto
-import kotlinx.coroutines.flow.Flow // New import
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbWatchProvidersResponseDto
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbCountryDto // New
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbWatchProviderListResponseDto // New
+import kotlinx.coroutines.flow.Flow 
 
 interface MovieRepository {
     // OMDb methods (to be removed or fully replaced)
@@ -23,6 +26,11 @@ interface MovieRepository {
     suspend fun getTmdbPopularMovies(page: Int): TmdbMoviesResponseDto
     suspend fun getTmdbNowPlayingMovies(page: Int): TmdbMoviesResponseDto
     suspend fun getTmdbUpcomingMovies(page: Int): TmdbMoviesResponseDto
+    suspend fun getTmdbMovieWatchProviders(movieId: Int): TmdbWatchProvidersResponseDto
+
+    // New methods for Settings
+    suspend fun getTmdbConfigurationCountries(): List<TmdbCountryDto>
+    suspend fun getTmdbAllMovieWatchProvidersList(watchRegion: String?): TmdbWatchProviderListResponseDto
 
     // Favorite Movie Operations
     fun getFavoriteMovies(): Flow<List<FavoriteMovieEntity>>

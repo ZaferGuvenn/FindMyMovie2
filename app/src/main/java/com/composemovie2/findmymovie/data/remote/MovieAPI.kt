@@ -6,6 +6,9 @@ import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbConfigurationDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbGenresResponseDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbMovieDto 
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbMoviesResponseDto
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbWatchProvidersResponseDto
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbCountryDto // New
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbWatchProviderListResponseDto // New
 import com.composemovie2.findmymovie.util.Constants 
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -72,7 +75,7 @@ interface MovieAPI {
         @Query("region") region: String? = null 
     ): TmdbMoviesResponseDto
 
-    @GET("movie/now_playing") // New method
+    @GET("movie/now_playing") 
     suspend fun getTmdbNowPlayingMovies(
         @Query("api_key") apiKey: String,
         @Query("page") page: Int = 1,
@@ -80,11 +83,29 @@ interface MovieAPI {
         @Query("region") region: String? = null
     ): TmdbMoviesResponseDto
 
-    @GET("movie/upcoming") // New method
+    @GET("movie/upcoming") 
     suspend fun getTmdbUpcomingMovies(
         @Query("api_key") apiKey: String,
         @Query("page") page: Int = 1,
         @Query("language") language: String = "en-US",
         @Query("region") region: String? = null
     ): TmdbMoviesResponseDto
+
+    @GET("movie/{movie_id}/watch/providers") 
+    suspend fun getTmdbMovieWatchProviders(
+        @Path("movie_id") movieId: Int,
+        @Query("api_key") apiKey: String
+    ): TmdbWatchProvidersResponseDto
+
+    @GET("configuration/countries") // New
+    suspend fun getTmdbConfigurationCountries(
+        @Query("api_key") apiKey: String
+    ): List<TmdbCountryDto> 
+
+    @GET("watch/providers/movie") // New
+    suspend fun getTmdbAllMovieWatchProvidersList(
+        @Query("api_key") apiKey: String,
+        @Query("language") language: String = "en-US",
+        @Query("watch_region") watchRegion: String? = null 
+    ): TmdbWatchProviderListResponseDto
 }

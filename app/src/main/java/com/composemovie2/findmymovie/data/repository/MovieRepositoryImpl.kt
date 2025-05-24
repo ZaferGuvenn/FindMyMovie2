@@ -1,7 +1,7 @@
 package com.composemovie2.findmymovie.data.repository
 
-import com.composemovie2.findmymovie.data.local.FavoriteMovieEntity // New import
-import com.composemovie2.findmymovie.data.local.MovieDao // New import
+import com.composemovie2.findmymovie.data.local.FavoriteMovieEntity 
+import com.composemovie2.findmymovie.data.local.MovieDao 
 import com.composemovie2.findmymovie.data.remote.MovieAPI
 import com.composemovie2.findmymovie.data.remote.dto.MovieDetailDto // OMDb
 import com.composemovie2.findmymovie.data.remote.dto.MoviesDto // OMDb
@@ -9,14 +9,17 @@ import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbConfigurationDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbGenresResponseDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbMovieDto
 import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbMoviesResponseDto
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbWatchProvidersResponseDto
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbCountryDto // New
+import com.composemovie2.findmymovie.data.remote.dto.tmdb.TmdbWatchProviderListResponseDto // New
 import com.composemovie2.findmymovie.domain.repository.MovieRepository
 import com.composemovie2.findmymovie.util.Constants
-import kotlinx.coroutines.flow.Flow // New import
+import kotlinx.coroutines.flow.Flow 
 import javax.inject.Inject
 
 class MovieRepositoryImpl @Inject constructor(
     private val movieAPI: MovieAPI,
-    private val movieDao: MovieDao // Added MovieDao to constructor
+    private val movieDao: MovieDao 
 ): MovieRepository {
 
     @Deprecated("Use TMDB equivalent")
@@ -82,6 +85,18 @@ class MovieRepositoryImpl @Inject constructor(
     override suspend fun getTmdbUpcomingMovies(page: Int): TmdbMoviesResponseDto { 
         if (Constants.TMDB_IMAGE_BASE_URL.isBlank()) { getTmdbConfiguration() }
         return movieAPI.getTmdbUpcomingMovies(apiKey = Constants.TMDB_API_KEY, page = page)
+    }
+
+    override suspend fun getTmdbMovieWatchProviders(movieId: Int): TmdbWatchProvidersResponseDto { 
+       return movieAPI.getTmdbMovieWatchProviders(movieId = movieId, apiKey = Constants.TMDB_API_KEY)
+   }
+
+    override suspend fun getTmdbConfigurationCountries(): List<TmdbCountryDto> { // New
+        return movieAPI.getTmdbConfigurationCountries(apiKey = Constants.TMDB_API_KEY)
+    }
+
+    override suspend fun getTmdbAllMovieWatchProvidersList(watchRegion: String?): TmdbWatchProviderListResponseDto { // New
+        return movieAPI.getTmdbAllMovieWatchProvidersList(apiKey = Constants.TMDB_API_KEY, watchRegion = watchRegion)
     }
 
     // Favorite Movie Implementations

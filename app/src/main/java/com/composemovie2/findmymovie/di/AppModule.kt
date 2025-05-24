@@ -1,10 +1,11 @@
 package com.composemovie2.findmymovie.di
 
-import android.app.Application // Required for Room.databaseBuilder context
+import android.app.Application 
+import android.content.Context // New import for UserPreferencesRepository provider
 import androidx.room.Room
 import com.composemovie2.findmymovie.data.local.MovieDao
 import com.composemovie2.findmymovie.data.local.MovieDatabase
-// ... other imports from AppModule ...
+import com.composemovie2.findmymovie.data.preferences.UserPreferencesRepository // New import
 import com.composemovie2.findmymovie.data.remote.MovieAPI
 import com.composemovie2.findmymovie.data.repository.MovieRepositoryImpl
 import com.composemovie2.findmymovie.domain.repository.MovieRepository
@@ -12,6 +13,7 @@ import com.composemovie2.findmymovie.util.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext // New import for UserPreferencesRepository provider
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -32,18 +34,15 @@ object AppModule {
             .create(MovieAPI::class.java)
     }
 
-    // This provider needs to be updated if MovieRepositoryImpl constructor changes
     @Provides
     @Singleton
     fun provideMovieRepository(
         api: MovieAPI, 
-        movieDao: MovieDao // Add MovieDao as a dependency
+        movieDao: MovieDao 
     ): MovieRepository {
-        // MovieRepositoryImpl will need to be updated to accept MovieDao
         return MovieRepositoryImpl(movieAPI = api, movieDao = movieDao) 
     }
 
-    // New providers for Room Database and DAO
     @Provides
     @Singleton
     fun provideMovieDatabase(app: Application): MovieDatabase {
@@ -58,5 +57,11 @@ object AppModule {
     @Singleton
     fun provideMovieDao(database: MovieDatabase): MovieDao {
         return database.movieDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUserPreferencesRepository(@ApplicationContext context: Context): UserPreferencesRepository { // New provider
+        return UserPreferencesRepository(context)
     }
 }
