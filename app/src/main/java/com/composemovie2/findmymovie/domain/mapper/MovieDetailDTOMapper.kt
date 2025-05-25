@@ -26,7 +26,8 @@ class MovieDetailDTOMapper @Inject constructor(): Mapper<MovieDetailDto, MovieDe
             genresList = from.genre?.split(", ") ?: emptyList(),
             cast = emptyList(),
             crew = emptyList(),
-            videos = emptyList()
+            videos = emptyList(),
+            watchProviderGroups = null
         )
     }
 }

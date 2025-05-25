@@ -97,4 +97,19 @@ dependencies {
     implementation ("androidx.compose.ui:ui-tooling-preview:1.6.1")
     implementation ("androidx.compose.ui:ui-util:1.6.1")
 
+    //room
+    val room_version = "2.7.1"
+
+    implementation("androidx.room:room-runtime:$room_version")
+
+    // If this project uses any Kotlin source, use Kotlin Symbol Processing (KSP)
+    // See Add the KSP plugin to your project
+    ksp("androidx.room:room-compiler:$room_version")
+
+    implementation("androidx.room:room-ktx:$room_version")
+
+
+    //data store
+
+    implementation ("androidx.datastore:datastore-preferences:1.1.7")
 }

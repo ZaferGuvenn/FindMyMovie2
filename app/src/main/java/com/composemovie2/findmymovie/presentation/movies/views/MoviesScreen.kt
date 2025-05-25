@@ -49,7 +49,7 @@ fun MoviesScreen(
         if (searchQuery.isNotBlank() && searchQuery.length >= 2) { 
             delay(500) 
             moviesViewModel.onEvent(MoviesEvent.SearchByQuery(searchQuery))
-            selectedPseudoGenreType = null 
+            selectedPseudoGenreType = "null"
         } else if (searchQuery.isBlank()) {
             selectedPseudoGenreType = popularMoviesPseudoGenre.id.toString()
             moviesViewModel.onEvent(MoviesEvent.LoadPopularMovies)
